@@ -1,4 +1,6 @@
-Hey there, buddy! Welcome to **Metric Chess**—the coolest, biggest upgrade to chess ever! Imagine you're a super king leading a huge army of soldiers, catapults, and sneaky princes on a giant numbered playground. You and a friend take turns moving your pieces to trap the enemy's last king so bad he can't escape—that's a win! White always goes first to keep it fair. If things get stuck or nobody can win, it's a tie called a draw. Don't worry if you've never played anything like chess—I'll explain **every single thing** super easy, like we're playing right now with snacks. Lots of pictures in words, fun examples, and tips to beat your friends. Let's get started!
+# Metric Chess
+
+Welcome to **Metric Chess**—the coolest, biggest upgrade to chess ever! Imagine you're a super king leading a huge army of soldiers, catapults, and sneaky princes on a giant numbered playground. You and a friend take turns moving your pieces to trap the enemy's last king so bad he can't escape—that's a win! White always goes first to keep it fair. If things get stuck or nobody can win, it's a tie called a draw. Don't worry if you've never played anything like chess—I'll explain **every single thing** super easy, like we're playing right now with snacks. Lots of pictures in words, fun examples, and tips to beat your friends. Let's get started!
 
 ### What Is Metric Chess All About?
 It's for two players: one with white pieces (you at the bottom), one with black (at the top). You swap turns moving **one piece** each time on a huge square playground. The big goal? Sneakily attack and capture your enemy's **last king** (they might have extra "heir kings" from promoted pawns—more on that awesome twist later). Put their last king in danger where he can't run, grab the attacker, or block? **Checkmate—you're the champion!**
@@ -141,4 +143,4 @@ Write moves like codes—super short!
 - Castling: **O-O** (r kingside), **O-O-O** (r queenside), **O-O-O-O** (t kingside), **O-O-O-O-O** (t queenside).
 Example: 1. P24 P76 2. T03 T83...
 
-That's **all of Metric Chess**—heirs, mega-ts, 10s everywhere! Set up, play a game, use checklist. You'll rule! Questions? Let's battle! 🚀
+That's **all of Metric Chess**—heirs, mega-ts, 10s everywhere! Set up, play a game, use checklist. You'll rule!
