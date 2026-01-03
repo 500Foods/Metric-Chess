@@ -158,75 +158,59 @@ NOTE: Please refer to individual projects for a more nuanced breakdown.
 The Hydrogen project, for example, shows the lines of C code grouped into core project code and unit testing code, and combines C and C header files into the same row, along with providing additional statistics.
 <!--CLOC-START -->
 ```cloc
-Last updated at 2026-01-02 15:59:13 UTC
+Last updated at 2026-01-03 01:03:33 UTC
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-JSON                           150             98              0         390392
-C                              875          35916          34319         126099
-SVG                            106            204           2502          94506
-Markdown                       513          14282            122          40611
-Text                            96             97              0          33888
-Lua                            153           3587           3045          24647
-Bourne Shell                   104           4969          71693          23408
-JavaScript                      38           1298           1829           6436
-C/C++ Header                   184           2015           5227           5891
-CSS                             13            354            175           2221
-HTML                            15            167             62           1194
-CMake                           17            171            318           1153
-make                             9             95             60            517
-TOML                             1             55             35            449
-Python                           1             36              9            195
-SQL                              9             14             13            174
-zsh                              2             31             42             97
-Delphi Form                      1              1              0             43
-YAML                             2              8             13             37
-Pascal                           2             11              2             31
+JavaScript                     398          15808          23750         167642
+JSON                           130             19              0          26756
+TypeScript                     386           4007           9940          18701
+Markdown                       124           5174             41          14832
+SVG                              1              0              0           2671
+CSS                              4             45             22           2572
+LESS                            14             34             44           1758
+SCSS                            14             34             44           1758
+HTML                             2              2              4            198
+YAML                            14             24             14            190
+Text                             4             22              0             68
+AppleScript                      1             11             23             61
+make                             1             14              4             32
+INI                              1              8              0             29
 -------------------------------------------------------------------------------
-SUM:                          2291          63409         119466         751989
+SUM:                          1094          25202          33886         237268
 -------------------------------------------------------------------------------
-613 Files were skipped (duplicate, binary, or without source code):
-  svg: 464
-  woff2: 30
-  ttf: 22
-  lua: 12
-  md: 9
-  sh: 9
-  css: 6
-  png: 6
-  gitignore: 5
-  json: 4
-  ico: 3
-  jpg: 3
-  lintignore-markdown: 3
-  clp: 2
-  lintignore-bash: 2
-  lintignore-c: 2
-  lintignore-lua: 2
-  lintignore: 2
-  sqruff_db2: 2
-  sqruff_mysql: 2
-  sqruff_postgresql: 2
-  sqruff_sqlite: 2
-  3mf: 1
-  ansi: 1
-  backup: 1
-  br: 1
-  control: 1
-  detailed: 1
-  disabled: 1
-  dproj: 1
-  gcode: 1
-  ggignore: 1
+159 Files were skipped (duplicate, binary, or without source code):
+  license: 80
+  json: 20
+  ts: 20
+  esbuild: 3
+  npmignore: 3
+  cts: 2
+  eslintrc: 2
+  lock: 2
+  node-which: 2
+  rollup: 2
+  txt: 2
+  yarnrc: 2
+  apache2: 1
+  bsd: 1
+  editorconfig: 1
+  eot: 1
   gitattributes: 1
-  html: 1
-  payload_generated: 1
-  sqlite: 1
-  stl: 1
-  stylelintcache: 1
-  stylelintrc: 1
-  supp: 1
-  trial-ignore: 1
+  gitignore: 1
+  is-docker: 1
+  mit: 1
+  nanoid: 1
+  node: 1
+  nycrc: 1
+  otf: 1
+  rc: 1
+  serve: 1
+  ttf: 1
+  vite: 1
+  woff2: 1
+  woff: 1
+  xsel: 1
 ```
 <!--CLOC-END-->
 
