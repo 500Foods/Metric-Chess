@@ -319,7 +319,11 @@ export class ChessGame {
             currentPlayer: this.currentPlayer,
             moveCount: this.moveCount,
             capturedPieces: { ...this.capturedPieces },
-            notation: [...this.moveNotation]
+            notation: [...this.moveNotation],
+            fromFile: fromFile,
+            fromRank: fromRank,
+            toFile: toFile,
+            toRank: toRank
         });
 
         // Clear redo stack when making a new move

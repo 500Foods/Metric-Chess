@@ -10,6 +10,7 @@ class MetricChessApp {
         this.selectedPiece = null;
         this.availableMoves = [];
         this.audioEnabled = true;
+        this.lastMovedPiece = null;
 
         // Set default game mode: human vs AI with white at bottom
         this.game.bottomPlayerType = 'human';
@@ -44,6 +45,9 @@ class MetricChessApp {
 
         // Check if AI should make the first move (black AI in default setup)
         this.checkForAIMove();
+
+        // Initialize fancy tooltips
+        this.initializeTooltips();
     }
 
     setupEventListeners() {
@@ -62,6 +66,8 @@ class MetricChessApp {
         // Reset game button
         document.getElementById('resetGame').addEventListener('click', () => {
             this.game.reset();
+            this.lastMovedPiece = null;
+            this.renderer.lastMovedPiece = null;
             this.renderer.renderBoard(this.game);
             this.updateGameStatus();
             this.clearHighlights();
@@ -71,7 +77,15 @@ class MetricChessApp {
         
         // Undo move button
         document.getElementById('undoMove').addEventListener('click', () => {
+            const undoneMove = this.game.gameHistory[this.game.gameHistory.length - 1]; // Get the move before undoing
             this.game.undoMove();
+            if (undoneMove) {
+                const screenCoords = this.transformBoardToScreenCoords(undoneMove.fromFile, undoneMove.fromRank);
+                this.lastMovedPiece = { file: screenCoords.screenFile, rank: screenCoords.screenRank };
+            } else {
+                this.lastMovedPiece = null;
+            }
+            this.renderer.lastMovedPiece = this.lastMovedPiece;
             this.renderer.renderBoard(this.game);
             this.updateGameStatus();
             this.clearHighlights();
@@ -81,7 +95,15 @@ class MetricChessApp {
 
         // Redo move button
         document.getElementById('redoMove').addEventListener('click', () => {
+            const redoneMove = this.game.redoStack[this.game.redoStack.length - 1]; // Get the move before redoing
             this.game.redoMove();
+            if (redoneMove) {
+                const screenCoords = this.transformBoardToScreenCoords(redoneMove.toFile, redoneMove.toRank);
+                this.lastMovedPiece = { file: screenCoords.screenFile, rank: screenCoords.screenRank };
+            } else {
+                this.lastMovedPiece = null;
+            }
+            this.renderer.lastMovedPiece = this.lastMovedPiece;
             this.renderer.renderBoard(this.game);
             this.updateGameStatus();
             this.clearHighlights();
@@ -150,7 +172,10 @@ class MetricChessApp {
                 // Make the move using board coordinates
                 const movingPlayer = this.game.currentPlayer;
                 this.game.movePiece(this.selectedPiece.file, this.selectedPiece.rank, boardFile, boardRank);
+                const screenCoords = this.transformBoardToScreenCoords(boardFile, boardRank);
+                this.lastMovedPiece = { file: screenCoords.screenFile, rank: screenCoords.screenRank };
                 await this.playMoveSound(movingPlayer);
+                this.renderer.lastMovedPiece = this.lastMovedPiece;
                 this.renderer.renderBoard(this.game);
                 this.updateGameStatus();
                 this.clearHighlights();
@@ -444,6 +469,9 @@ class MetricChessApp {
         // Set current player (always white goes first)
         this.game.currentPlayer = 'white';
 
+        this.lastMovedPiece = null;
+        this.renderer.lastMovedPiece = null;
+
         // Re-render with new orientation
         this.renderer.renderBoard(this.game);
         this.updateGameStatus();
@@ -530,7 +558,10 @@ class MetricChessApp {
             );
 
             if (result) {
+                const screenCoords = this.transformBoardToScreenCoords(move.toFile, move.toRank);
+                this.lastMovedPiece = { file: screenCoords.screenFile, rank: screenCoords.screenRank };
                 await this.playMoveSound(currentPlayer);
+                this.renderer.lastMovedPiece = this.lastMovedPiece;
                 this.renderer.renderBoard(this.game);
                 this.updateGameStatus();
                 this.clearHighlights();
@@ -579,7 +610,10 @@ class MetricChessApp {
             );
 
             if (result) {
+                const screenCoords = this.transformBoardToScreenCoords(randomMove.to.file, randomMove.to.rank);
+                this.lastMovedPiece = { file: screenCoords.screenFile, rank: screenCoords.screenRank };
                 await this.playMoveSound(movingPlayer);
+                this.renderer.lastMovedPiece = this.lastMovedPiece;
                 this.renderer.renderBoard(this.game);
                 this.updateGameStatus();
                 this.clearHighlights();
@@ -612,6 +646,56 @@ class MetricChessApp {
         this.renderer.renderBoard(this.game);
 
         console.log(`Orientation changed to: ${this.game.whitePosition}`);
+    }
+
+    initializeTooltips() {
+        // Initialize Floating UI tooltips for all elements with title attribute
+        const { computePosition, flip, shift, offset, arrow, autoUpdate } = FloatingUIDOM;
+
+        const elements = document.querySelectorAll('[title]');
+        elements.forEach(el => {
+            const tooltip = document.createElement('div');
+            tooltip.className = 'tooltip';
+            tooltip.textContent = el.title;
+            el.title = ''; // Remove default title
+            document.body.appendChild(tooltip);
+
+            const arrowElement = document.createElement('div');
+            arrowElement.className = 'tooltip-arrow';
+            tooltip.appendChild(arrowElement);
+
+            let cleanup;
+
+            function update() {
+                computePosition(el, tooltip, {
+                    placement: 'top',
+                    middleware: [
+                        offset(8),
+                        flip(),
+                        shift({ padding: 5 })
+                    ]
+                }).then(({ x, y, placement }) => {
+                    Object.assign(tooltip.style, {
+                        left: `${x}px`,
+                        top: `${y}px`,
+                    });
+                });
+            }
+
+            function show() {
+                tooltip.style.display = 'block';
+                update();
+                cleanup = autoUpdate(el, tooltip, update);
+            }
+
+            function hide() {
+                tooltip.style.display = 'none';
+                cleanup?.();
+            }
+
+            el.addEventListener('mouseenter', show);
+            el.addEventListener('mouseleave', hide);
+        });
     }
 }
 

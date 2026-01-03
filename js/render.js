@@ -7,6 +7,7 @@ export class ChessRenderer {
     constructor() {
         this.boardElement = document.getElementById('chessBoard');
         this.chessGame = new ChessGame(); // For accessing rotateGrid method
+        this.lastMovedPiece = null;
     }
 
     initializeBoard() {
@@ -217,17 +218,22 @@ export class ChessRenderer {
     renderPiece(file, rank, piece) {
         const cell = this.getCellElement(file, rank);
         if (!cell) return;
-        
+
         // Clear existing piece in this cell
         const existingPiece = cell.querySelector('.chess-piece');
         if (existingPiece) existingPiece.remove();
-        
+
         // Create piece element
         const pieceElement = document.createElement('i');
         pieceElement.className = `fas ${this.getPieceIcon(piece.type)} chess-piece ${piece.color}`;
         pieceElement.dataset.piece = piece.type;
         pieceElement.dataset.color = piece.color;
-        
+
+        // Add last-moved class if this is the last moved piece
+        if (this.lastMovedPiece && this.lastMovedPiece.file === file && this.lastMovedPiece.rank === rank) {
+            pieceElement.classList.add('last-moved');
+        }
+
         cell.appendChild(pieceElement);
     }
 
