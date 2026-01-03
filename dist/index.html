@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metric Chess</title>
+    <!-- Font Awesome Free -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script type="module" crossorigin src="./assets/js/main-Cxs5D7qX.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/css/main-C1AvjJO-.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="board-container">
+            <div class="rank-labels top coordinate-labels">
+                <div class="rank-label">9</div>
+                <div class="rank-label">8</div>
+                <div class="rank-label">7</div>
+                <div class="rank-label">6</div>
+                <div class="rank-label">5</div>
+                <div class="rank-label">4</div>
+                <div class="rank-label">3</div>
+                <div class="rank-label">2</div>
+                <div class="rank-label">1</div>
+                <div class="rank-label">0</div>
+            </div>
+            <div class="file-labels left coordinate-labels">
+                <div class="file-label">0</div>
+                <div class="file-label">1</div>
+                <div class="file-label">2</div>
+                <div class="file-label">3</div>
+                <div class="file-label">4</div>
+                <div class="file-label">5</div>
+                <div class="file-label">6</div>
+                <div class="file-label">7</div>
+                <div class="file-label">8</div>
+                <div class="file-label">9</div>
+            </div>
+            <div class="chess-board" id="chessBoard"></div>
+            <div class="file-labels bottom coordinate-labels">
+                <div class="file-label">0</div>
+                <div class="file-label">1</div>
+                <div class="file-label">2</div>
+                <div class="file-label">3</div>
+                <div class="file-label">4</div>
+                <div class="file-label">5</div>
+                <div class="file-label">6</div>
+                <div class="file-label">7</div>
+                <div class="file-label">8</div>
+                <div class="file-label">9</div>
+            </div>
+            <div class="rank-labels right coordinate-labels">
+                <div class="rank-label">0</div>
+                <div class="rank-label">1</div>
+                <div class="rank-label">2</div>
+                <div class="rank-label">3</div>
+                <div class="rank-label">4</div>
+                <div class="rank-label">5</div>
+                <div class="rank-label">6</div>
+                <div class="rank-label">7</div>
+                <div class="rank-label">8</div>
+                <div class="rank-label">9</div>
+            </div>
+        </div>
+        <div class="game-controls">
+            <button id="newGame">New Game</button>
+            <button id="resetGame">Reset Game</button>
+            <button id="undoMove">Undo Move</button>
+            <div class="game-status" id="gameStatus">White's turn</div>
+        </div>
+    </div>
+    
+    <!-- Game Setup Modal -->
+    <div class="modal" id="gameSetupModal">
+        <div class="modal-content">
+            <h2>New Game Setup</h2>
+            <div class="setup-option">
+                <label for="boardOrientation">Board Orientation:</label>
+                <select id="boardOrientation">
+                    <option value="white-bottom">White at Bottom</option>
+                    <option value="black-bottom">Black at Bottom</option>
+                </select>
+                <p class="orientation-hint">The first player in the game mode will be at the bottom</p>
+            </div>
+            <div class="setup-option">
+                <label for="gameMode">Game Mode:</label>
+                <select id="gameMode">
+                    <option value="human-human">Human vs Human</option>
+                    <option value="human-ai">Human vs AI</option>
+                    <option value="ai-human">AI vs Human</option>
+                    <option value="ai-ai">AI vs AI</option>
+                </select>
+                <p class="mode-hint">First player is at the bottom, second at the top</p>
+            </div>
+            <div class="modal-buttons">
+                <button id="startGame">Start Game</button>
+                <button id="cancelGame">Cancel</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

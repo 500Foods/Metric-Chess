@@ -1,0 +1,22 @@
+{
+  "name": "metric-chess",
+  "version": "1.0.0",
+  "description": "Metric Chess - A 10x10 chess variant with unique pieces",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build:prod": "vite build",
+    "preview": "vite preview",
+    "serve": "serve dist"
+  },
+  "dependencies": {
+    "font-awesome": "^4.7.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "serve": "^14.2.5"
+  },
+  "keywords": ["chess", "metric", "game", "web"],
+  "author": "Metric Chess Team",
+  "license": "MIT"
+}
