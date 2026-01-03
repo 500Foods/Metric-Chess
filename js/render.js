@@ -41,8 +41,8 @@ export class ChessRenderer {
             for (let file = 0; file < 10; file++) {
                 const piece = actualBoard[rank][file];
                 if (piece) {
-                    // Use displayColor if available (for flipped boards), otherwise use piece.color
-                    const color = piece.displayColor || piece.color;
+                    // Use original color for rendering
+                    const color = piece.color;
                     this.renderPiece(file, rank, { ...piece, color });
                 }
             }

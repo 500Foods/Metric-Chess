@@ -55,6 +55,16 @@ class MetricChessApp {
             this.renderer.renderBoard(this.game.board);
             this.updateGameStatus();
             this.clearHighlights();
+            this.updateMoveHistory();
+        });
+        
+        // Redo move button
+        document.getElementById('redoMove').addEventListener('click', () => {
+            this.game.redoMove();
+            this.renderer.renderBoard(this.game.board);
+            this.updateGameStatus();
+            this.clearHighlights();
+            this.updateMoveHistory();
         });
         
         // New game button
@@ -88,6 +98,7 @@ class MetricChessApp {
                 this.renderer.renderBoard(this.game.board);
                 this.updateGameStatus();
                 this.clearHighlights();
+                this.updateMoveHistory();
                 return;
             }
         }
@@ -113,6 +124,30 @@ class MetricChessApp {
 
     clearHighlights() {
         this.renderer.clearHighlights();
+    }
+
+    updateMoveHistory() {
+        const moveListElement = document.getElementById('moveList');
+        moveListElement.innerHTML = '';
+        
+        // Group moves by pair (white and black)
+        for (let i = 0; i < this.game.moveNotation.length; i++) {
+            const move = this.game.moveNotation[i];
+            const moveElement = document.createElement('div');
+            moveElement.className = `move-item ${move.player}`;
+            
+            const moveNumberSpan = document.createElement('span');
+            moveNumberSpan.className = 'move-number';
+            moveNumberSpan.textContent = move.moveNumber + '.';
+            
+            const notationSpan = document.createElement('span');
+            notationSpan.className = 'move-notation';
+            notationSpan.textContent = move.notation;
+            
+            moveElement.appendChild(moveNumberSpan);
+            moveElement.appendChild(notationSpan);
+            moveListElement.appendChild(moveElement);
+        }
     }
 
     updateGameStatus() {
@@ -165,6 +200,7 @@ class MetricChessApp {
         this.renderer.renderBoard(this.game.board);
         this.updateGameStatus();
         this.clearHighlights();
+        this.updateMoveHistory();
         
         this.hideGameSetupModal();
         
@@ -182,10 +218,11 @@ class MetricChessApp {
             for (let file = 0; file < 10; file++) {
                 const piece = this.game.board[rank][file];
                 if (piece) {
+                    // Flip both rank and file to maintain proper orientation
                     flippedBoard[9 - rank][9 - file] = {
                         ...piece,
-                        // Flip the color for display purposes
-                        displayColor: piece.color === 'white' ? 'black' : 'white'
+                        // Keep original color but note it's flipped for move logic
+                        flipped: true
                     };
                 }
             }

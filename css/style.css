@@ -121,9 +121,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 20px;
+    gap: 10px;
     padding: 10px;
     background-color: #34495e;
+    flex-wrap: wrap;
 }
 
 button {
@@ -155,6 +156,7 @@ button:hover {
     pointer-events: none;
     user-select: none;
     font-weight: bold;
+    z-index: 100;
 }
 
 .file-labels {
@@ -282,6 +284,60 @@ button:hover {
 
 .modal-buttons button#cancelGame:hover {
     background-color: #c0392b;
+}
+
+/* Move History */
+.move-history {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 200px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    max-height: 80vh;
+    overflow-y: auto;
+    color: #333;
+}
+
+.move-history h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: #34495e;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.move-list {
+    font-family: monospace;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.move-item {
+    margin-bottom: 5px;
+    padding: 2px 0;
+}
+
+.move-item.white {
+    color: #555;
+}
+
+.move-item.black {
+    color: #333;
+    font-weight: bold;
+}
+
+.move-number {
+    display: inline-block;
+    width: 20px;
+    color: #666;
+}
+
+.move-notation {
+    margin-left: 10px;
 }
 
 /* Responsive design */

@@ -45,8 +45,10 @@ export class ChessGame {
         this.board = Array(10).fill().map(() => Array(10).fill(null));
         this.currentPlayer = 'white';
         this.gameHistory = [];
+        this.redoStack = [];
         this.capturedPieces = { white: [], black: [] };
         this.moveCount = 0;
+        this.moveNotation = [];
         
         // Initialize the board with Metric Chess setup
         this.reset();
@@ -233,19 +235,22 @@ export class ChessGame {
         
         // Check if move is valid
         const availableMoves = this.getAvailableMoves(fromFile, fromRank);
-        const isValidMove = availableMoves.some(move => 
+        const isValidMove = availableMoves.some(move =>
             move.file === toFile && move.rank === toRank
         );
         
         if (!isValidMove) return false;
         
         // Check for pawn promotion
-        if (piece.type === 'pawn' && 
-            ((piece.color === 'white' && toRank === 9) || 
+        if (piece.type === 'pawn' &&
+            ((piece.color === 'white' && toRank === 9) ||
              (piece.color === 'black' && toRank === 0))) {
             // Promote to queen (default)
             piece.type = 'queen';
         }
+        
+        // Generate move notation
+        const moveNotation = this.generateMoveNotation(piece, fromFile, fromRank, toFile, toRank);
         
         // Move the piece
         this.board[toRank][toFile] = piece;
@@ -262,8 +267,19 @@ export class ChessGame {
             from: { file: fromFile, rank: fromRank },
             to: { file: toFile, rank: toRank },
             piece: { ...piece },
-            captured: targetPiece
+            captured: targetPiece,
+            notation: moveNotation
         });
+        
+        // Add to move notation list
+        this.moveNotation.push({
+            moveNumber: Math.floor(this.moveCount / 2) + 1,
+            player: this.currentPlayer,
+            notation: moveNotation
+        });
+        
+        // Clear redo stack when making a new move
+        this.redoStack = [];
         
         // Switch player
         this.currentPlayer = this.currentPlayer === 'white' ? 'black' : 'white';
@@ -277,6 +293,9 @@ export class ChessGame {
         
         const lastMove = this.gameHistory.pop();
         
+        // Save to redo stack before undoing
+        this.redoStack.push(lastMove);
+        
         // Restore the piece to original position
         this.board[lastMove.from.rank][lastMove.from.file] = lastMove.piece;
         this.board[lastMove.to.rank][lastMove.to.file] = lastMove.captured || null;
@@ -286,11 +305,63 @@ export class ChessGame {
             this.capturedPieces[lastMove.piece.color].pop();
         }
         
+        // Remove from move notation
+        this.moveNotation.pop();
+        
         // Switch player back
         this.currentPlayer = this.currentPlayer === 'white' ? 'black' : 'white';
         this.moveCount--;
         
         return true;
+    }
+
+    redoMove() {
+        if (this.redoStack.length === 0) return false;
+        
+        const moveToRedo = this.redoStack.pop();
+        
+        // Get the piece from the original position
+        const piece = this.board[moveToRedo.from.rank][moveToRedo.from.file];
+        if (!piece) return false;
+        
+        // Move the piece back
+        this.board[moveToRedo.to.rank][moveToRedo.to.file] = piece;
+        this.board[moveToRedo.from.rank][moveToRedo.from.file] = null;
+        
+        // Restore captured piece if any
+        if (moveToRedo.captured) {
+            this.capturedPieces[piece.color].push(moveToRedo.captured);
+        }
+        
+        // Restore move to history and notation
+        this.gameHistory.push(moveToRedo);
+        this.moveNotation.push({
+            moveNumber: Math.floor(this.moveCount / 2) + 1,
+            player: this.currentPlayer,
+            notation: moveToRedo.notation
+        });
+        
+        // Switch player
+        this.currentPlayer = this.currentPlayer === 'white' ? 'black' : 'white';
+        this.moveCount++;
+        
+        return true;
+    }
+
+    generateMoveNotation(piece, fromFile, fromRank, toFile, toRank) {
+        // Generate notation in Metric Chess format
+        const pieceSymbol = piece.type.charAt(0).toUpperCase();
+        const fromCoord = `${fromFile}${fromRank}`;
+        const toCoord = `${toFile}${toRank}`;
+        
+        // Check if it's a capture
+        const targetPiece = this.board[toRank][toFile];
+        if (targetPiece && targetPiece.color !== piece.color) {
+            return `${pieceSymbol}${fromCoord}x${toCoord}`;
+        }
+        
+        // Regular move
+        return `${pieceSymbol}${fromCoord}-${toCoord}`;
     }
 
     isCheck() {
