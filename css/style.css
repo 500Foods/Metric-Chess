@@ -19,7 +19,12 @@ body {
     height: 100vh;
     width: 100vw;
     overflow: hidden;
-    background-color: #2c3e50;
+    background: radial-gradient(ellipse at center, #1a1a1a 0%, #000000 100%),
+                linear-gradient(45deg, rgba(192,192,192,0.1) 0%, rgba(255,0,0,0.05) 25%, rgba(192,192,192,0.1) 50%, rgba(255,0,0,0.05) 75%, rgba(192,192,192,0.1) 100%),
+                linear-gradient(-45deg, rgba(255,255,255,0.05) 0%, rgba(139,0,0,0.1) 50%, rgba(255,255,255,0.05) 100%);
+    background-size: 100% 100%, 200px 200px, 150px 150px;
+    background-position: center, 0 0, 0 0;
+    background-repeat: no-repeat, repeat, repeat;
     color: white;
 }
 
@@ -127,6 +132,35 @@ body {
     flex-wrap: wrap;
 }
 
+/* AI Thinking Spinners */
+.ai-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    opacity: 0.3;
+    transition: opacity 0.3s;
+}
+
+.ai-spinner.active {
+    opacity: 1;
+}
+
+.ai-spinner.white-thinking {
+    color: #ffffff;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.ai-spinner.black-thinking {
+    color: #333333;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.ai-spinner i {
+    font-size: 1.875rem;
+}
+
 button {
     padding: 10px 20px;
     background-color: #3498db;
@@ -134,12 +168,17 @@ button {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 1.25rem;
     transition: background-color 0.3s;
 }
 
-button:hover {
+button:hover:not(:disabled) {
     background-color: #2980b9;
+}
+
+button:disabled {
+    background-color: #7f8c8d;
+    cursor: not-allowed;
 }
 
 .game-status {
@@ -148,7 +187,7 @@ button:hover {
     padding: 0 20px;
 }
 
-/* Coordinate labels */
+/* Coordinate labels - all four sides */
 .coordinate-labels {
     position: absolute;
     font-size: 0.8rem;
@@ -165,13 +204,13 @@ button:hover {
     width: 100%;
 }
 
-.file-labels.bottom {
-    margin-top: 5px;
+.file-labels.top {
+    top: -25px;
+    left: 0;
 }
 
-.file-labels.top {
-    margin-bottom: 5px;
-    transform: translateY(-100%);
+.file-labels.bottom {
+    margin-top: 5px;
 }
 
 .file-label {
@@ -206,7 +245,7 @@ button:hover {
     width: 20px;
 }
 
-/* Game Setup Modal */
+/* Modals */
 .modal {
     display: none;
     position: fixed;
@@ -215,7 +254,7 @@ button:hover {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.7);
     justify-content: center;
     align-items: center;
 }
@@ -227,6 +266,114 @@ button:hover {
     width: 300px;
     max-width: 80%;
     color: #333;
+}
+
+/* Welcome Modal Styles */
+.welcome-content {
+    background: linear-gradient(135deg, var(--light-square) 0%, var(--dark-square) 100%);
+    color: #333;
+    max-width: 800px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border: 3px solid #8b4513;
+}
+
+.welcome-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.welcome-title {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #2c1810;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    margin-bottom: 10px;
+}
+
+.welcome-subtitle {
+    font-size: 1.2rem;
+    color: #5d4037;
+    font-style: italic;
+}
+
+.welcome-description {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #3e2723;
+}
+
+.welcome-features h2 {
+    text-align: center;
+    color: #2c1810;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.feature-item {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.feature-item:hover {
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    color: var(--dark-square);
+    margin-bottom: 10px;
+}
+
+.feature-item h3 {
+    color: #2c1810;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.feature-item p {
+    color: #5d4037;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.welcome-actions {
+    text-align: center;
+}
+
+.start-game-btn {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    color: white;
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+}
+
+.start-game-btn:hover {
+    background: linear-gradient(135deg, #229954 0%, #27ae60 100%);
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
 }
 
 .modal-content h2 {
@@ -340,12 +487,22 @@ button:hover {
     margin-left: 10px;
 }
 
-/* Orientation Toggle Button - now in game controls */
-#toggleOrientation {
-    background-color: #2ecc71;
+.move-notation.white {
+    color: #555;
 }
 
-#toggleOrientation:hover {
+.move-notation.black {
+    color: #333;
+}
+
+/* Orientation Rotation Buttons */
+.orientation-button {
+    background-color: #2ecc71;
+    padding: 10px 15px;
+    font-size: 1.5rem;
+}
+
+.orientation-button:hover {
     background-color: #27ae60;
 }
 
@@ -354,9 +511,39 @@ button:hover {
     .chess-piece {
         font-size: 2rem;
     }
-     
+
     .game-controls {
         flex-direction: column;
         gap: 10px;
+    }
+
+    .welcome-title {
+        font-size: 2rem;
+    }
+
+    .welcome-subtitle {
+        font-size: 1rem;
+    }
+
+    .welcome-description {
+        font-size: 1rem;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .feature-item {
+        padding: 15px;
+    }
+
+    .feature-icon {
+        font-size: 2rem;
+    }
+
+    .start-game-btn {
+        padding: 12px 30px;
+        font-size: 1rem;
     }
 }

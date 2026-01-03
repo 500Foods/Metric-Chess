@@ -11,63 +11,72 @@
 <body>
     <div class="app-container">
         <div class="board-container">
-            <div class="rank-labels top coordinate-labels">
-                <div class="rank-label">9</div>
-                <div class="rank-label">8</div>
-                <div class="rank-label">7</div>
-                <div class="rank-label">6</div>
-                <div class="rank-label">5</div>
-                <div class="rank-label">4</div>
-                <div class="rank-label">3</div>
-                <div class="rank-label">2</div>
-                <div class="rank-label">1</div>
-                <div class="rank-label">0</div>
+                <div class="file-labels top coordinate-labels">
+                    <div class="file-label">0</div>
+                    <div class="file-label">1</div>
+                    <div class="file-label">2</div>
+                    <div class="file-label">3</div>
+                    <div class="file-label">4</div>
+                    <div class="file-label">5</div>
+                    <div class="file-label">6</div>
+                    <div class="file-label">7</div>
+                    <div class="file-label">8</div>
+                    <div class="file-label">9</div>
+                </div>
+                <div class="rank-labels left coordinate-labels">
+                    <div class="rank-label">9</div>
+                    <div class="rank-label">8</div>
+                    <div class="rank-label">7</div>
+                    <div class="rank-label">6</div>
+                    <div class="rank-label">5</div>
+                    <div class="rank-label">4</div>
+                    <div class="rank-label">3</div>
+                    <div class="rank-label">2</div>
+                    <div class="rank-label">1</div>
+                    <div class="rank-label">0</div>
+                </div>
+                <div class="chess-board" id="chessBoard"></div>
+                <div class="rank-labels right coordinate-labels">
+                    <div class="rank-label">9</div>
+                    <div class="rank-label">8</div>
+                    <div class="rank-label">7</div>
+                    <div class="rank-label">6</div>
+                    <div class="rank-label">5</div>
+                    <div class="rank-label">4</div>
+                    <div class="rank-label">3</div>
+                    <div class="rank-label">2</div>
+                    <div class="rank-label">1</div>
+                    <div class="rank-label">0</div>
+                </div>
+                <div class="file-labels bottom coordinate-labels">
+                    <div class="file-label">0</div>
+                    <div class="file-label">1</div>
+                    <div class="file-label">2</div>
+                    <div class="file-label">3</div>
+                    <div class="file-label">4</div>
+                    <div class="file-label">5</div>
+                    <div class="file-label">6</div>
+                    <div class="file-label">7</div>
+                    <div class="file-label">8</div>
+                    <div class="file-label">9</div>
+                </div>
             </div>
-            <div class="file-labels left coordinate-labels">
-                <div class="file-label">0</div>
-                <div class="file-label">1</div>
-                <div class="file-label">2</div>
-                <div class="file-label">3</div>
-                <div class="file-label">4</div>
-                <div class="file-label">5</div>
-                <div class="file-label">6</div>
-                <div class="file-label">7</div>
-                <div class="file-label">8</div>
-                <div class="file-label">9</div>
-            </div>
-            <div class="chess-board" id="chessBoard"></div>
-            <div class="file-labels bottom coordinate-labels">
-                <div class="file-label">0</div>
-                <div class="file-label">1</div>
-                <div class="file-label">2</div>
-                <div class="file-label">3</div>
-                <div class="file-label">4</div>
-                <div class="file-label">5</div>
-                <div class="file-label">6</div>
-                <div class="file-label">7</div>
-                <div class="file-label">8</div>
-                <div class="file-label">9</div>
-            </div>
-            <div class="rank-labels right coordinate-labels">
-                <div class="rank-label">0</div>
-                <div class="rank-label">1</div>
-                <div class="rank-label">2</div>
-                <div class="rank-label">3</div>
-                <div class="rank-label">4</div>
-                <div class="rank-label">5</div>
-                <div class="rank-label">6</div>
-                <div class="rank-label">7</div>
-                <div class="rank-label">8</div>
-                <div class="rank-label">9</div>
-            </div>
-        </div>
         <div class="game-controls">
-            <button id="newGame">New Game</button>
-            <button id="resetGame">Reset Game</button>
-            <button id="undoMove">Undo Move</button>
-            <button id="redoMove">Redo Move</button>
-            <button id="toggleOrientation">🔄 Orientation</button>
-            <div class="game-status" id="gameStatus">White's turn</div>
+            <div class="ai-spinner white-thinking" id="whiteSpinner" title="White AI thinking">
+                <i class="fas fa-atom"></i>
+            </div>
+            <button id="newGame" title="Start a new game"><i class="fas fa-plus-circle"></i></button>
+            <button id="resetGame" title="Reset current game"><i class="fas fa-refresh"></i></button>
+            <button id="undoMove" title="Undo last move"><i class="fas fa-undo"></i></button>
+            <button id="redoMove" title="Redo move"><i class="fas fa-redo"></i></button>
+            <div class="game-status" id="gameStatus" title="Current game status">White's turn</div>
+            <button id="resignGame" title="Resign the game"><i class="fas fa-flag"></i></button>
+            <button id="rotateLeft" class="orientation-button" title="Rotate board left"><i class="fas fa-arrow-left"></i></button>
+            <button id="rotateRight" class="orientation-button" title="Rotate board right"><i class="fas fa-arrow-right"></i></button>
+            <button id="toggleAudio" title="Toggle sound effects"><i class="fas fa-volume-up"></i></button>
+            <div class="ai-spinner black-thinking" id="blackSpinner" title="Black AI thinking">
+                <i class="fas fa-atom"></i>
+            </div>
         </div>
         
         <!-- Move History -->
@@ -77,6 +86,57 @@
         </div>
     </div>
     
+    <!-- Welcome Modal -->
+    <div class="modal" id="welcomeModal">
+        <div class="modal-content welcome-content">
+            <div class="welcome-header">
+                <h1 class="welcome-title">Metric Chess</h1>
+                <p class="welcome-subtitle">The Ultimate 10x10 Chess Experience</p>
+            </div>
+            <div class="welcome-description">
+                <p>Discover the exciting world of Metric Chess, a strategic 10x10 chess variant featuring powerful trebuchets, heir kings, and epic battles on an expanded battlefield!</p>
+            </div>
+            <div class="welcome-features">
+                <h2>Game Features</h2>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <i class="fas fa-chess-board feature-icon"></i>
+                        <h3>10x10 Board</h3>
+                        <p>Twice the battlefield for strategic depth</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-bullseye feature-icon"></i>
+                        <h3>Trebuchets</h3>
+                        <p>Powerful catapults that jump exactly 3 squares</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-crown feature-icon"></i>
+                        <h3>Heir Kings</h3>
+                        <p>Promoted pawns become royal heirs</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-brain feature-icon"></i>
+                        <h3>AI Opponent</h3>
+                        <p>Challenge the computer or play with friends</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-undo feature-icon"></i>
+                        <h3>Undo/Redo</h3>
+                        <p>Take back moves and explore different paths</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-mobile-alt feature-icon"></i>
+                        <h3>Responsive</h3>
+                        <p>Play on any device, anywhere</p>
+                    </div>
+                </div>
+            </div>
+            <div class="welcome-actions">
+                <button id="startWelcomeGame" class="start-game-btn">Start Playing</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Game Setup Modal -->
     <div class="modal" id="gameSetupModal">
         <div class="modal-content">
@@ -101,6 +161,17 @@
                 </select>
                 <p class="mode-hint">First player is at the bottom, second at the top</p>
             </div>
+            <div class="setup-option">
+                <label for="aiDifficulty">AI Difficulty:</label>
+                <select id="aiDifficulty">
+                    <option value="1000">Easy (1 second)</option>
+                    <option value="3000" selected>Medium (3 seconds)</option>
+                    <option value="5000">Hard (5 seconds)</option>
+                    <option value="10000">Expert (10 seconds)</option>
+                    <option value="20000">Master (20 seconds)</option>
+                </select>
+                <p class="difficulty-hint">Longer thinking time means stronger AI moves</p>
+            </div>
             <div class="modal-buttons">
                 <button id="startGame">Start Game</button>
                 <button id="cancelGame">Cancel</button>
@@ -108,5 +179,7 @@
         </div>
     </div>
     <script src="js/main.js" type="module"></script>
+    <!-- Fairy-Stockfish (ffish.js) loaded after modules -->
+    <script src="js/stockfish/ffish.js"></script>
 </body>
 </html>

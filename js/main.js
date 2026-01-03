@@ -9,29 +9,39 @@ class MetricChessApp {
         this.renderer = new ChessRenderer();
         this.selectedPiece = null;
         this.availableMoves = [];
-        
+        this.audioEnabled = true;
+
         // Set default game mode: human vs AI with white at bottom
         this.game.bottomPlayerType = 'human';
         this.game.topPlayerType = 'ai';
         this.game.whitePosition = 'bottom';
-        
-        // Initialize the application
+
+        // Set up event listeners for modals
+        this.setupModalEventListeners();
+
+        // Initialize the board first
         this.initialize();
+
+        // Then show welcome modal
+        this.showWelcomeModal();
     }
 
     initialize() {
         // Set up the chess board
         this.renderer.initializeBoard();
-         
+
         // Render initial game state
-        this.renderer.renderBoard(this.game.board);
-         
+        this.renderer.renderBoard(this.game);
+
         // Set up event listeners
         this.setupEventListeners();
-         
+
         // Update game status
         this.updateGameStatus();
-        
+
+        // Update button states
+        this.updateButtonStates();
+
         // Check if AI should make the first move (black AI in default setup)
         this.checkForAIMove();
     }
@@ -52,27 +62,31 @@ class MetricChessApp {
         // Reset game button
         document.getElementById('resetGame').addEventListener('click', () => {
             this.game.reset();
-            this.renderer.renderBoard(this.game.board);
+            this.renderer.renderBoard(this.game);
             this.updateGameStatus();
             this.clearHighlights();
+            this.updateMoveHistory();
+            this.updateButtonStates();
         });
         
         // Undo move button
         document.getElementById('undoMove').addEventListener('click', () => {
             this.game.undoMove();
-            this.renderer.renderBoard(this.game.board);
+            this.renderer.renderBoard(this.game);
             this.updateGameStatus();
             this.clearHighlights();
             this.updateMoveHistory();
+            this.updateButtonStates();
         });
-        
+
         // Redo move button
         document.getElementById('redoMove').addEventListener('click', () => {
             this.game.redoMove();
-            this.renderer.renderBoard(this.game.board);
+            this.renderer.renderBoard(this.game);
             this.updateGameStatus();
             this.clearHighlights();
             this.updateMoveHistory();
+            this.updateButtonStates();
         });
         
         // New game button
@@ -80,9 +94,24 @@ class MetricChessApp {
             this.showGameSetupModal();
         });
         
-        // Orientation toggle button
-        document.getElementById('toggleOrientation').addEventListener('click', () => {
-            this.cycleOrientation();
+        // Orientation rotation buttons
+        document.getElementById('rotateLeft').addEventListener('click', () => {
+            this.rotateOrientation('left');
+        });
+
+        document.getElementById('rotateRight').addEventListener('click', () => {
+            this.rotateOrientation('right');
+        });
+
+
+        // Resign game button
+        document.getElementById('resignGame').addEventListener('click', () => {
+            this.resignGame();
+        });
+
+        // Toggle audio button
+        document.getElementById('toggleAudio').addEventListener('click', () => {
+            this.toggleAudio();
         });
         
         // Game setup modal buttons
@@ -95,7 +124,16 @@ class MetricChessApp {
         });
     }
 
-    handleCellClick(file, rank) {
+    setupModalEventListeners() {
+        // Welcome modal start game button
+        document.getElementById('startWelcomeGame').addEventListener('click', () => {
+            this.hideWelcomeModal();
+            this.showGameSetupModal();
+            // Board is already initialized, just show setup
+        });
+    }
+
+    async handleCellClick(file, rank) {
         // Transform the clicked coordinates back to board coordinates based on orientation
         const { boardFile, boardRank } = this.transformScreenToBoardCoords(file, rank);
         
@@ -110,26 +148,44 @@ class MetricChessApp {
              
             if (isValidMove) {
                 // Make the move using board coordinates
+                const movingPlayer = this.game.currentPlayer;
                 this.game.movePiece(this.selectedPiece.file, this.selectedPiece.rank, boardFile, boardRank);
+                await this.playMoveSound(movingPlayer);
                 this.renderer.renderBoard(this.game);
                 this.updateGameStatus();
                 this.clearHighlights();
                 this.updateMoveHistory();
+                this.updateButtonStates();
+
+                // Check if AI should move next
+                this.checkForAIMove();
+
+                // Clear selection after move
+                this.selectedPiece = null;
+                this.availableMoves = [];
                 return;
             }
         }
          
         // If we clicked on a piece of the current player's color
         if (piece && piece.color === this.game.currentPlayer) {
-            // Calculate available moves using board coordinates
-            this.availableMoves = this.game.getAvailableMoves(boardFile, boardRank);
-             
-            // Highlight the selected piece and available moves (using screen coordinates)
-            this.renderer.highlightPiece(file, rank, 'selected-piece');
-            this.renderer.highlightMoves(this.availableMoves, this.game.whitePosition);
-             
-            // Store the selected piece with board coordinates
-            this.selectedPiece = { file: boardFile, rank: boardRank, piece };
+            // Check if it's already selected
+            if (this.selectedPiece && this.selectedPiece.file === boardFile && this.selectedPiece.rank === boardRank) {
+                // Deselect
+                this.clearHighlights();
+                this.selectedPiece = null;
+                this.availableMoves = [];
+            } else {
+                // Calculate available moves using board coordinates
+                this.availableMoves = this.game.getAvailableMoves(boardFile, boardRank);
+
+                // Highlight the selected piece and available moves (using screen coordinates)
+                this.renderer.highlightPiece(file, rank, 'selected-piece');
+                this.renderer.highlightMoves(this.availableMoves, this.game.whitePosition);
+
+                // Store the selected piece with board coordinates
+                this.selectedPiece = { file: boardFile, rank: boardRank, piece };
+            }
         } else {
             // Clear selection if clicking on empty cell or opponent's piece
             this.clearHighlights();
@@ -140,60 +196,87 @@ class MetricChessApp {
 
     transformScreenToBoardCoords(screenFile, screenRank) {
         const whitePosition = this.game.whitePosition || 'bottom';
-        let boardFile = screenFile;
-        let boardRank = screenRank;
         
-        switch (whitePosition) {
-            case 'top':
-                // Flip vertically
-                boardRank = 9 - screenRank;
-                break;
-            case 'left':
-                // Rotate 90 degrees counter-clockwise
-                boardFile = screenRank;
-                boardRank = 9 - screenFile;
-                break;
-            case 'right':
-                // Rotate 90 degrees clockwise
-                boardFile = 9 - screenRank;
-                boardRank = screenFile;
-                break;
-            case 'bottom':
-            default:
-                // No transformation
-                break;
+        // Create a 12x12 grid to map the screen coordinates using the same approach
+        const grid = Array(12).fill().map(() => Array(12).fill(null));
+        
+        // Mark the screen position in the grid (12x12 coordinates)
+        const screenX = screenFile + 1; // Convert to 12x12 coordinates (1-10)
+        const screenY = 10 - screenRank; // Invert to match display grid
+        grid[screenY][screenX] = { file: screenFile, rank: screenRank };
+        
+        // Map orientation to rotation degrees
+        const orientationToDegrees = {
+            'bottom': 0,    // 0° rotation
+            'left': 90,     // 90° clockwise
+            'top': 180,     // 180°
+            'right': 270    // 270° clockwise
+        };
+
+        const appliedDegrees = orientationToDegrees[whitePosition] || 0;
+        const reverseDegrees = (360 - appliedDegrees) % 360;
+
+        // Apply reverse rotation to get back to original orientation
+        const rotatedGrid = this.game.rotateGrid(grid, reverseDegrees);
+        
+        // Find the board coordinates in the rotated grid
+        for (let y = 0; y < 12; y++) {
+            for (let x = 0; x < 12; x++) {
+                const cell = rotatedGrid[y][x];
+                if (cell && x >= 1 && x <= 10 && y >= 1 && y <= 10) {
+                    // Convert 12x12 display coordinates back to board coordinates
+                    const boardRank = 10 - y; // y=1 -> rank=9, y=10 -> rank=0
+                    const boardFile = x - 1; // x=1 -> file=0, x=10 -> file=9
+
+                    return { boardFile: boardFile, boardRank: boardRank };
+                }
+            }
         }
         
-        return { boardFile, boardRank };
+        // Fallback to original coordinates if not found
+        return { boardFile: screenFile, boardRank: screenRank };
     }
     
     transformBoardToScreenCoords(boardFile, boardRank) {
         const whitePosition = this.game.whitePosition || 'bottom';
-        let screenFile = boardFile;
-        let screenRank = boardRank;
         
-        switch (whitePosition) {
-            case 'top':
-                // Flip vertically
-                screenRank = 9 - boardRank;
-                break;
-            case 'left':
-                // Rotate 90 degrees counter-clockwise
-                screenFile = boardRank;
-                screenRank = 9 - boardFile;
-                break;
-            case 'right':
-                // Rotate 90 degrees clockwise
-                screenFile = 9 - boardRank;
-                screenRank = boardFile;
-                break;
-            case 'bottom':
-            default:
-                // No transformation
-                break;
+        // Create a 12x12 grid to map the board coordinates using the same approach
+        const grid = Array(12).fill().map(() => Array(12).fill(null));
+        
+        // Convert board coordinates to display coordinates in 12x12 grid
+        const displayRank = 10 - boardRank; // board rank 0 -> display rank 10
+        const displayFile = boardFile + 1; // board file 0 -> display file 1
+        grid[displayRank][displayFile] = { file: boardFile, rank: boardRank };
+        
+        // Map orientation to rotation degrees
+        const orientationToDegrees = {
+            'bottom': 0,    // 0° rotation
+            'left': 90,     // 90° clockwise
+            'top': 180,     // 180°
+            'right': 270    // 270° clockwise
+        };
+        
+        const degrees = orientationToDegrees[whitePosition] || 0;
+        
+        // Apply rotation
+        const rotatedGrid = this.game.rotateGrid(grid, degrees);
+        
+        // Find the screen coordinates in the rotated grid
+        for (let y = 0; y < 12; y++) {
+            for (let x = 0; x < 12; x++) {
+                const cell = rotatedGrid[y][x];
+                if (cell && x >= 1 && x <= 10 && y >= 1 && y <= 10) {
+                    // Convert 12x12 screen coordinates to 10x10 screen coordinates
+                    const screenFile = x - 1;
+                    const screenRank = 10 - y; // y=10 -> rank=0, y=1 -> rank=9
+
+                    return { screenFile, screenRank };
+                }
+            }
         }
         
-        return { screenFile, screenRank };
+        // Fallback to original coordinates if not found
+        return { screenFile: boardFile, screenRank: boardRank };
     }
     
     clearHighlights() {
@@ -203,38 +286,120 @@ class MetricChessApp {
     updateMoveHistory() {
         const moveListElement = document.getElementById('moveList');
         moveListElement.innerHTML = '';
-        
-        // Group moves by pair (white and black)
-        for (let i = 0; i < this.game.moveNotation.length; i++) {
-            const move = this.game.moveNotation[i];
+
+        // Group moves by move number (pairs of white/black)
+        const movesByNumber = {};
+        this.game.moveNotation.forEach(move => {
+            if (!movesByNumber[move.moveNumber]) {
+                movesByNumber[move.moveNumber] = {};
+            }
+            movesByNumber[move.moveNumber][move.player] = move.notation;
+        });
+
+        // Display each move pair
+        Object.keys(movesByNumber).forEach(moveNumber => {
+            const moveData = movesByNumber[moveNumber];
             const moveElement = document.createElement('div');
-            moveElement.className = `move-item ${move.player}`;
-            
+            moveElement.className = 'move-item';
+
             const moveNumberSpan = document.createElement('span');
             moveNumberSpan.className = 'move-number';
-            moveNumberSpan.textContent = move.moveNumber + '.';
-            
-            const notationSpan = document.createElement('span');
-            notationSpan.className = 'move-notation';
-            notationSpan.textContent = move.notation;
-            
+            moveNumberSpan.textContent = moveNumber + '.';
+
+            const whiteSpan = document.createElement('span');
+            whiteSpan.className = 'move-notation white';
+            whiteSpan.textContent = moveData.white || '';
+
+            const blackSpan = document.createElement('span');
+            blackSpan.className = 'move-notation black';
+            blackSpan.textContent = moveData.black || '';
+
             moveElement.appendChild(moveNumberSpan);
-            moveElement.appendChild(notationSpan);
+            moveElement.appendChild(whiteSpan);
+            moveElement.appendChild(blackSpan);
             moveListElement.appendChild(moveElement);
-        }
+        });
+    }
+
+    updateButtonStates() {
+        const undoButton = document.getElementById('undoMove');
+        const redoButton = document.getElementById('redoMove');
+
+        undoButton.disabled = this.game.gameHistory.length === 0;
+        redoButton.disabled = this.game.redoStack.length === 0;
     }
 
     updateGameStatus() {
         const statusElement = document.getElementById('gameStatus');
         statusElement.textContent = `${this.game.currentPlayer.charAt(0).toUpperCase() + this.game.currentPlayer.slice(1)}'s turn`;
-        
+
         if (this.game.isCheck()) {
             statusElement.textContent += ' - CHECK!';
         }
-        
+
         if (this.game.isCheckmate()) {
             statusElement.textContent = `CHECKMATE! ${this.game.currentPlayer === 'white' ? 'Black' : 'White'} wins!`;
+        } else if (this.game.isStalemate()) {
+            statusElement.textContent = 'STALEMATE! It\'s a draw!';
         }
+    }
+
+    resignGame() {
+        // Resign the current player
+        const winner = this.game.currentPlayer === 'white' ? 'Black' : 'White';
+        alert(`${this.game.currentPlayer.charAt(0).toUpperCase() + this.game.currentPlayer.slice(1)} resigns! ${winner} wins!`);
+        // Reset or start new game
+        this.game.reset();
+        this.renderer.renderBoard(this.game);
+        this.clearHighlights();
+        this.updateMoveHistory();
+        this.updateButtonStates();
+    }
+
+    toggleAudio() {
+        this.audioEnabled = !this.audioEnabled;
+        const button = document.getElementById('toggleAudio');
+        const icon = button.querySelector('i');
+        if (this.audioEnabled) {
+            icon.className = 'fas fa-volume-up';
+        } else {
+            icon.className = 'fas fa-volume-mute';
+        }
+        console.log(`Audio ${this.audioEnabled ? 'enabled' : 'disabled'}`);
+    }
+
+    async playMoveSound(player) {
+        if (!this.audioEnabled) return;
+
+        // Create different sounds for white and black moves
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Resume audio context if suspended (required for autoplay policies)
+        if (audioContext.state === 'suspended') {
+            await audioContext.resume();
+        }
+
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        if (player === 'white') {
+            // Higher pitch for white
+            oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(500, audioContext.currentTime + 0.1);
+        } else {
+            // Lower pitch for black
+            oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(300, audioContext.currentTime + 0.1);
+        }
+
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.1);
     }
 
     showGameSetupModal() {
@@ -247,62 +412,145 @@ class MetricChessApp {
         modal.style.display = 'none';
     }
 
+    showWelcomeModal() {
+        const modal = document.getElementById('welcomeModal');
+        modal.style.display = 'flex';
+    }
+
+    hideWelcomeModal() {
+        const modal = document.getElementById('welcomeModal');
+        modal.style.display = 'none';
+    }
+
     startNewGame() {
         const boardOrientation = document.getElementById('boardOrientation').value;
         const gameMode = document.getElementById('gameMode').value;
-          
-        // Reset the game - this creates a fresh board and clears history
+        const aiTimeLimit = parseInt(document.getElementById('aiDifficulty').value);
+
+        // Reset the game completely
         this.game.reset();
-        this.game.gameHistory = [];
-        this.game.redoStack = [];
-        this.game.moveNotation = [];
-        this.game.moveCount = 0;
-          
+
         // Set up board orientation based on selection
         this.game.whitePosition = boardOrientation.replace('white-', '');
-          
+
         // Parse game mode to determine AI players
         const [bottomPlayer, topPlayer] = gameMode.split('-');
         this.game.bottomPlayerType = bottomPlayer;
         this.game.topPlayerType = topPlayer;
-          
+
+        // Set AI time limit
+        this.game.aiTimeLimit = aiTimeLimit;
+
         // Set current player (always white goes first)
         this.game.currentPlayer = 'white';
-          
+
         // Re-render with new orientation
         this.renderer.renderBoard(this.game);
         this.updateGameStatus();
         this.clearHighlights();
         this.updateMoveHistory();
-          
+        this.updateButtonStates();
+
         this.hideGameSetupModal();
-          
+
         console.log(`Starting new game: ${gameMode} with ${boardOrientation}`);
         console.log(`White position: ${this.game.whitePosition}`);
         console.log(`Bottom: ${bottomPlayer}, Top: ${topPlayer}`);
-          
+
         // Check if AI needs to make a move
         this.checkForAIMove();
     }
+
+    // Show/hide AI thinking spinners
+    showAIThinking(player) {
+        const spinnerId = player === 'white' ? 'whiteSpinner' : 'blackSpinner';
+        const spinner = document.getElementById(spinnerId);
+        spinner.classList.add('active');
+        // Add fa-spin to the icon
+        const icon = spinner.querySelector('i');
+        if (icon) icon.classList.add('fa-spin');
+    }
+
+    hideAIThinking(player) {
+        const spinnerId = player === 'white' ? 'whiteSpinner' : 'blackSpinner';
+        const spinner = document.getElementById(spinnerId);
+        spinner.classList.remove('active');
+        // Remove fa-spin from the icon
+        const icon = spinner.querySelector('i');
+        if (icon) icon.classList.remove('fa-spin');
+    }
     
     checkForAIMove() {
+        // Check if game is over
+        if (this.game.isCheckmate() || this.game.isStalemate()) {
+            console.log('Game is over, no AI move');
+            return;
+        }
+
         // Check if it's AI's turn
         const currentPlayer = this.game.currentPlayer;
-        const playerType = currentPlayer === 'white' ? this.game.bottomPlayerType : this.game.topPlayerType;
-        
+        // Fix: Determine player type based on board position and colors
+        // If white is at bottom, then: white = bottomPlayer, black = topPlayer
+        // If white is at top, then: white = topPlayer, black = bottomPlayer
+        let playerType;
+        if (this.game.whitePosition === 'bottom' || this.game.whitePosition === 'right') {
+            // White at bottom/right
+            playerType = currentPlayer === 'white' ? this.game.bottomPlayerType : this.game.topPlayerType;
+        } else {
+            // White at top/left
+            playerType = currentPlayer === 'white' ? this.game.topPlayerType : this.game.bottomPlayerType;
+        }
+
+        console.log(`Check AI move: currentPlayer=${currentPlayer}, playerType=${playerType}, whitePosition=${this.game.whitePosition}, bottomPlayer=${this.game.bottomPlayerType}, topPlayer=${this.game.topPlayerType}`);
+
         if (playerType === 'ai') {
-            // For now, make a simple random move for AI
-            // This will be replaced with fairy-stockfish integration later
+            // Show AI thinking spinner
+            this.showAIThinking(currentPlayer);
+            
+            // Make the AI move
             setTimeout(() => {
                 this.makeSimpleAIMove();
-            }, 1000); // Small delay to simulate thinking
+            }, 500); // Small delay for UI feedback
         }
     }
     
-    makeSimpleAIMove() {
+    async makeSimpleAIMove() {
+        const currentPlayer = this.game.currentPlayer;
+
+        // Use fairy-stockfish AI
+        this.game.getAIMove(async (move) => {
+            // Hide AI thinking spinner
+            this.hideAIThinking(currentPlayer);
+
+            const result = this.game.movePiece(
+                move.fromFile,
+                move.fromRank,
+                move.toFile,
+                move.toRank
+            );
+
+            if (result) {
+                await this.playMoveSound(currentPlayer);
+                this.renderer.renderBoard(this.game);
+                this.updateGameStatus();
+                this.clearHighlights();
+                this.updateMoveHistory();
+                this.updateButtonStates();
+
+                // Check if the next player is also AI
+                this.checkForAIMove();
+            } else {
+                console.error('AI move failed:', move);
+                // Fallback to random move if AI fails
+                await this.fallbackRandomMove();
+            }
+        });
+    }
+
+    async fallbackRandomMove() {
         // Find all possible moves for the AI
         const allMoves = [];
-        
+
         for (let rank = 0; rank < 10; rank++) {
             for (let file = 0; file < 10; file++) {
                 const piece = this.game.board[rank][file];
@@ -318,39 +566,51 @@ class MetricChessApp {
                 }
             }
         }
-        
+
         // If there are valid moves, make a random one
         if (allMoves.length > 0) {
             const randomMove = allMoves[Math.floor(Math.random() * allMoves.length)];
+            const movingPlayer = this.game.currentPlayer;
             const result = this.game.movePiece(
                 randomMove.from.file,
                 randomMove.from.rank,
                 randomMove.to.file,
                 randomMove.to.rank
             );
-            
+
             if (result) {
-                this.renderer.renderBoard(this.game.board);
+                await this.playMoveSound(movingPlayer);
+                this.renderer.renderBoard(this.game);
                 this.updateGameStatus();
                 this.clearHighlights();
                 this.updateMoveHistory();
-                
+                this.updateButtonStates();
+
                 // Check if the next player is also AI
                 this.checkForAIMove();
             }
         }
     }
 
-    // Orientation toggle methods
-    cycleOrientation() {
-        const orientations = ['bottom', 'right', 'top', 'left'];
+    // Orientation rotation methods
+    rotateOrientation(direction) {
+        const orientations = ['bottom', 'left', 'top', 'right'];
         const currentIndex = orientations.indexOf(this.game.whitePosition);
-        const nextIndex = (currentIndex + 1) % orientations.length;
+        let nextIndex;
+
+        if (direction === 'left') {
+            // Rotate clockwise (left arrow) - white moves: bottom → left → top → right
+            nextIndex = (currentIndex + 1) % orientations.length;
+        } else {
+            // Rotate counter-clockwise (right arrow) - white moves: bottom → right → top → left
+            nextIndex = (currentIndex - 1 + orientations.length) % orientations.length;
+        }
+
         this.game.whitePosition = orientations[nextIndex];
-        
+
         // Re-render with new orientation
         this.renderer.renderBoard(this.game);
-        
+
         console.log(`Orientation changed to: ${this.game.whitePosition}`);
     }
 }

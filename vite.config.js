@@ -19,6 +19,19 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    open: true
+    open: true,
+    headers: {
+      // Enable SharedArrayBuffer for Stockfish WebAssembly threading
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'require-corp'
+    }
+  },
+  preview: {
+    port: 3000,
+    headers: {
+      // Enable SharedArrayBuffer for Stockfish WebAssembly threading
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'require-corp'
+    }
   }
 });

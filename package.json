@@ -10,7 +10,8 @@
     "serve": "serve dist"
   },
   "dependencies": {
-    "font-awesome": "^4.7.0"
+    "font-awesome": "^4.7.0",
+    "fairy-stockfish-nnue.wasm": "^1.0.0"
   },
   "devDependencies": {
     "vite": "^5.0.0",
