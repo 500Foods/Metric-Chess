@@ -2,6 +2,7 @@
 
 // Import the rotateGrid function from chess.js to ensure consistency
 import { ChessGame } from './chess.js';
+import { getFAIconPrefix, getPieceIcon } from './fontawesome-config.js';
 
 export class ChessRenderer {
     constructor() {
@@ -225,7 +226,7 @@ export class ChessRenderer {
 
         // Create piece element
         const pieceElement = document.createElement('i');
-        pieceElement.className = `fas ${this.getPieceIcon(piece.type)} chess-piece ${piece.color}`;
+        pieceElement.className = `${getFAIconPrefix()} ${this.getPieceIcon(piece.type)} chess-piece ${piece.color}`;
         pieceElement.dataset.piece = piece.type;
         pieceElement.dataset.color = piece.color;
 
@@ -238,17 +239,7 @@ export class ChessRenderer {
     }
 
     getPieceIcon(pieceType) {
-        const iconMap = {
-            'king': 'fa-chess-king',
-            'queen': 'fa-chess-queen',
-            'rook': 'fa-chess-rook',
-            'bishop': 'fa-chess-bishop',
-            'knight': 'fa-chess-knight',
-            'pawn': 'fa-chess-pawn',
-            'trebuchet': 'fa-tower-observation'
-        };
-        
-        return iconMap[pieceType] || 'fa-question';
+        return getPieceIcon(pieceType);
     }
 
     getCellElement(file, rank) {

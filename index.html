@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Metric Chess</title>
     <link rel="stylesheet" href="css/style.css">
-    <!-- Font Awesome Free -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Floating UI for fancy tooltips -->
     <script src="https://unpkg.com/@floating-ui/core@1"></script>
     <script src="https://unpkg.com/@floating-ui/dom@1"></script>
@@ -66,19 +64,19 @@
             </div>
         <div class="game-controls">
             <div class="ai-spinner white-thinking" id="whiteSpinner" title="White AI thinking">
-                <i class="fas fa-atom"></i>
+                <i class="fa-solid fa-atom" data-icon="whiteSpinner"></i>
             </div>
-            <button id="newGame" title="Start a new game"><i class="fas fa-plus-circle"></i></button>
-            <button id="resetGame" title="Reset current game"><i class="fas fa-refresh"></i></button>
-            <button id="undoMove" title="Undo last move"><i class="fas fa-undo"></i></button>
-            <button id="redoMove" title="Redo move"><i class="fas fa-redo"></i></button>
+            <button id="newGame" title="Start a new game"><i class="fa-solid fa-plus-circle" data-icon="newGame"></i></button>
+            <button id="resetGame" title="Reset current game"><i class="fa-solid fa-refresh" data-icon="resetGame"></i></button>
+            <button id="undoMove" title="Undo last move"><i class="fa-solid fa-undo" data-icon="undoMove"></i></button>
+            <button id="redoMove" title="Redo move"><i class="fa-solid fa-redo" data-icon="redoMove"></i></button>
             <div class="game-status" id="gameStatus" title="Current game status">White's turn</div>
-            <button id="resignGame" title="Resign the game"><i class="fas fa-flag"></i></button>
-            <button id="rotateLeft" class="orientation-button" title="Rotate board left"><i class="fas fa-arrow-left"></i></button>
-            <button id="rotateRight" class="orientation-button" title="Rotate board right"><i class="fas fa-arrow-right"></i></button>
-            <button id="toggleAudio" title="Toggle sound effects"><i class="fas fa-volume-up"></i></button>
+            <button id="resignGame" title="Resign the game"><i class="fa-solid fa-flag" data-icon="resignGame"></i></button>
+            <button id="rotateLeft" class="orientation-button" title="Rotate board left"><i class="fa-solid fa-arrow-left" data-icon="rotateLeft"></i></button>
+            <button id="rotateRight" class="orientation-button" title="Rotate board right"><i class="fa-solid fa-arrow-right" data-icon="rotateRight"></i></button>
+            <button id="toggleAudio" title="Toggle sound effects"><i class="fa-solid fa-volume-up" data-icon="toggleAudio"></i></button>
             <div class="ai-spinner black-thinking" id="blackSpinner" title="Black AI thinking">
-                <i class="fas fa-atom"></i>
+                <i class="fa-solid fa-atom" data-icon="blackSpinner"></i>
             </div>
         </div>
         
@@ -103,32 +101,32 @@
                 <h2>Game Features</h2>
                 <div class="features-grid">
                     <div class="feature-item">
-                        <i class="fas fa-chess-board feature-icon"></i>
+                        <i class="fa-solid fa-chess-board feature-icon" data-icon="chessBoard"></i>
                         <h3>10x10 Board</h3>
                         <p>Twice the battlefield for strategic depth</p>
                     </div>
                     <div class="feature-item">
-                        <i class="fas fa-bullseye feature-icon"></i>
+                        <i class="fa-solid fa-meteor feature-icon" data-icon="trebuchetFeature"></i>
                         <h3>Trebuchets</h3>
                         <p>Powerful catapults that jump exactly 3 squares</p>
                     </div>
                     <div class="feature-item">
-                        <i class="fas fa-crown feature-icon"></i>
+                        <i class="fa-solid fa-crown feature-icon" data-icon="heirFeature"></i>
                         <h3>Heir Kings</h3>
-                        <p>Promoted pawns become royal heirs</p>
+                        <p>Pawns can become royal heirs</p>
                     </div>
                     <div class="feature-item">
-                        <i class="fas fa-brain feature-icon"></i>
+                        <i class="fa-solid fa-brain feature-icon" data-icon="aiFeature"></i>
                         <h3>AI Opponent</h3>
                         <p>Challenge the computer or play with friends</p>
                     </div>
                     <div class="feature-item">
-                        <i class="fas fa-undo feature-icon"></i>
+                        <i class="fa-solid fa-undo feature-icon" data-icon="undoFeature"></i>
                         <h3>Undo/Redo</h3>
                         <p>Take back moves and explore different paths</p>
                     </div>
                     <div class="feature-item">
-                        <i class="fas fa-mobile-alt feature-icon"></i>
+                        <i class="fa-solid fa-mobile-alt feature-icon" data-icon="responsiveFeature"></i>
                         <h3>Responsive</h3>
                         <p>Play on any device, anywhere</p>
                     </div>
@@ -145,27 +143,27 @@
         <div class="modal-content">
             <h2>New Game Setup</h2>
             <div class="setup-option">
-                <label for="boardOrientation">White Position:</label>
+                <label for="boardOrientation">Light Position</label>
                 <select id="boardOrientation">
                     <option value="white-bottom" selected>Bottom</option>
                     <option value="white-top">Top</option>
                     <option value="white-left">Left</option>
                     <option value="white-right">Right</option>
                 </select>
-                <p class="orientation-hint">Where should white pieces be positioned?</p>
+                <p class="orientation-hint">Orient the board</p>
             </div>
             <div class="setup-option">
-                <label for="gameMode">Game Mode:</label>
+                <label for="gameMode">Game Mode</label>
                 <select id="gameMode">
                     <option value="human-human">Human vs Human</option>
                     <option value="human-ai" selected>Human vs AI</option>
                     <option value="ai-human">AI vs Human</option>
                     <option value="ai-ai">AI vs AI</option>
                 </select>
-                <p class="mode-hint">First player is at the bottom, second at the top</p>
+                <p class="mode-hint">Light versus Dark</p>
             </div>
             <div class="setup-option">
-                <label for="aiDifficulty">AI Difficulty:</label>
+                <label for="aiDifficulty">AI Difficulty</label>
                 <select id="aiDifficulty">
                     <option value="1000">Easy (1 second)</option>
                     <option value="3000" selected>Medium (3 seconds)</option>
@@ -173,11 +171,26 @@
                     <option value="10000">Expert (10 seconds)</option>
                     <option value="20000">Master (20 seconds)</option>
                 </select>
-                <p class="difficulty-hint">Longer thinking time means stronger AI moves</p>
+                <p class="difficulty-hint">Longer thinking for stronger AI</p>
             </div>
             <div class="modal-buttons">
                 <button id="startGame">Start Game</button>
                 <button id="cancelGame">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pawn Promotion Modal -->
+    <div class="modal" id="promotionModal">
+        <div class="modal-content promotion-content">
+            <h2>Choose Promotion Piece</h2>
+            <div class="promotion-options">
+                <button class="promotion-piece" data-piece="queen"><i class="fa-solid fa-chess-queen"></i></button>
+                <button class="promotion-piece" data-piece="rook"><i class="fa-solid fa-chess-rook"></i></button>
+                <button class="promotion-piece" data-piece="bishop"><i class="fa-solid fa-chess-bishop"></i></button>
+                <button class="promotion-piece" data-piece="knight"><i class="fa-solid fa-chess-knight"></i></button>
+                <button class="promotion-piece" data-piece="trebuchet"><i class="fa-solid fa-meteor"></i></button>
+                <button class="promotion-piece" data-piece="heir"><i class="fa-solid fa-chess-king"></i></button>
             </div>
         </div>
     </div>

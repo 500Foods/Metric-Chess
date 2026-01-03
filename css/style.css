@@ -1,5 +1,21 @@
 /* Metric Chess - 10x10 Chess Board */
 
+/* Icon definitions for buttons - change these to customize icons */
+:root {
+    --icon-new-game: "fa-plus-circle";
+    --icon-reset-game: "fa-refresh";
+    --icon-undo-move: "fa-undo";
+    --icon-redo-move: "fa-redo";
+    --icon-resign-game: "fa-flag";
+    --icon-rotate-left: "fa-arrow-left";
+    --icon-rotate-right: "fa-arrow-right";
+    --icon-toggle-audio: "fa-volume-up";
+    --icon-start-welcome: "fa-play";
+    --icon-start-game: "fa-play";
+    --icon-cancel-game: "fa-times";
+    --icon-ai-spinner: "fa-atom";
+}
+
 :root {
     --light-square: #f0d9b5;
     --dark-square: #b58863;
@@ -52,7 +68,9 @@ body {
     height: 100%;
     gap: 0;
     border: 2px solid #34495e;
+    border-radius: 10px;
     position: relative;
+    overflow: hidden;
 }
 
 .cell {
@@ -118,21 +136,44 @@ body {
     z-index: 10000;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     filter:
-      drop-shadow(0 1px 1px rgba(255, 255, 255, 0.2))
-  drop-shadow(0 -1px 1px rgba(255, 255, 255, 0.2))
-  drop-shadow(1px 0 1px rgba(255, 255, 255, 0.2))
-  drop-shadow(-1px 0 1px rgba(255, 255, 255, 0.2));
+        drop-shadow( 0px  1px 0px rgba(255, 255, 255, 0.1))
+        drop-shadow( 0px -1px 0px rgba(255, 255, 255, 0.1))
+        drop-shadow( 1px  0px 0px rgba(255, 255, 255, 0.1))
+        drop-shadow(-1px  0px 0px rgba(255, 255, 255, 0.1))
+        drop-shadow( 1px  1px 0px rgba(255, 255, 255, 0.1))
+        drop-shadow(-1px -1px 0px rgba(255, 255, 255, 0.1))
+        drop-shadow( 1px -1px 0px rgba(255, 255, 255, 0.1))
+        drop-shadow(-1px  1px 0px rgba(255, 255, 255, 0.1))
+        ;
 }
 
 .tooltip-arrow {
     position: absolute;
     width: 0;
     height: 0;
-    border: 6px solid transparent;
-    border-top-color: #333;
-    bottom: -12px;
     left: 50%;
     transform: translateX(-50%);
+    bottom: -1px;
+}
+
+.tooltip-arrow::before {
+    content: '';
+    position: absolute;
+    border: 14px solid transparent;
+    border-top-color: #333;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 0;
+}
+
+.tooltip-arrow::after {
+    content: '';
+    position: absolute;
+    border: 13px solid transparent;
+    border-top-color: #555;
+    left: 50%;
+    transform: translateX(-50%);
+    top: -3px;
 }
 
 /* Move highlighting */
@@ -161,7 +202,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
     padding: 10px;
     background-color: #34495e;
     flex-wrap: wrap;
@@ -195,28 +236,38 @@ body {
     text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
 }
 
+.ai-spinner svg,
 .ai-spinner i {
     font-size: 1.875rem;
 }
 
 button {
-    padding: 10px 20px;
-    background-color: #3498db;
-    color: white;
+    background: none;
     border: none;
-    border-radius: 5px;
+    color: inherit;
     cursor: pointer;
-    font-size: 1.25rem;
-    transition: background-color 0.3s;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+button svg,
+button i {
+    font-size: 1.875rem;
 }
 
 button:hover:not(:disabled) {
-    background-color: #2980b9;
+    opacity: 1;
 }
 
 button:disabled {
-    background-color: #7f8c8d;
     cursor: not-allowed;
+    opacity: 0.5;
 }
 
 .game-status {
@@ -374,7 +425,9 @@ button:disabled {
 .feature-item:hover {
     transform: translateY(-5px);
 }
-
+             
+.feature-item > i,
+.feature-item > svg,
 .feature-icon {
     font-size: 2.5rem;
     color: var(--dark-square);
@@ -395,19 +448,23 @@ button:disabled {
 
 .welcome-actions {
     text-align: center;
+    display: flex;
+    justify-content: center;
 }
 
 .start-game-btn {
     background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
     color: white;
-    padding: 15px 40px;
-    font-size: 1.2rem;
+    padding: 25px 40px;
+    font-size: 1.8rem;
     font-weight: bold;
     border: none;
     border-radius: 25px;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+    white-space: nowrap;
+    width: auto;
 }
 
 .start-game-btn:hover {
@@ -459,6 +516,8 @@ button:disabled {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    width: 48%;
+    font-size: 1rem;
 }
 
 .modal-buttons button:hover {
@@ -471,6 +530,45 @@ button:disabled {
 
 .modal-buttons button#cancelGame:hover {
     background-color: #c0392b;
+}
+
+/* Promotion Modal */
+.promotion-content {
+    text-align: center;
+    max-width: 400px;
+}
+
+.promotion-content h2 {
+    margin-bottom: 20px;
+    color: #34495e;
+}
+
+.promotion-options {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.promotion-piece {
+    width: 60px;
+    height: 60px;
+    background: none;
+    border: 2px solid #34495e;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    transition: all 0.3s;
+    color: #34495e;
+}
+
+.promotion-piece:hover {
+    background-color: #34495e;
+    color: white;
+    transform: scale(1.1);
 }
 
 /* Move History */
@@ -537,13 +635,21 @@ button:disabled {
 
 /* Orientation Rotation Buttons */
 .orientation-button {
-    background-color: #2ecc71;
-    padding: 10px 15px;
-    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    opacity: 0.7;
+    transition: opacity 0.3s;
 }
 
 .orientation-button:hover {
-    background-color: #27ae60;
+    opacity: 1;
+}
+.orientation-button svg,
+.orientation-button i {
+    font-size: 1.875rem;
 }
 
 /* Responsive design */

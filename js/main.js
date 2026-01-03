@@ -1,10 +1,21 @@
 // Metric Chess - Main Application
 import { ChessGame } from './chess.js';
 import { ChessRenderer } from './render.js';
+import { loadFontAwesomeConfig, getFAIconPrefix, getUIIcon } from './fontawesome-config.js';
 
 // Main application class
 class MetricChessApp {
     constructor() {
+        this.initializeApp();
+    }
+
+    async initializeApp() {
+        // Load Font Awesome config first
+        await loadFontAwesomeConfig();
+
+        // Update static HTML icons to use the configured style
+        this.updateStaticIcons();
+
         this.game = new ChessGame();
         this.renderer = new ChessRenderer();
         this.selectedPiece = null;
@@ -140,9 +151,17 @@ class MetricChessApp {
         document.getElementById('startGame').addEventListener('click', () => {
             this.startNewGame();
         });
-        
+
         document.getElementById('cancelGame').addEventListener('click', () => {
             this.hideGameSetupModal();
+        });
+
+        // Promotion modal buttons
+        document.querySelectorAll('.promotion-piece').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const pieceType = e.currentTarget.dataset.piece;
+                this.completePromotion(pieceType);
+            });
         });
     }
 
@@ -153,6 +172,22 @@ class MetricChessApp {
             this.showGameSetupModal();
             // Board is already initialized, just show setup
         });
+    }
+
+    async makeMove(fromFile, fromRank, toFile, toRank, player, promotionPiece = null) {
+        this.game.movePiece(fromFile, fromRank, toFile, toRank, promotionPiece);
+        const screenCoords = this.transformBoardToScreenCoords(toFile, toRank);
+        this.lastMovedPiece = { file: screenCoords.screenFile, rank: screenCoords.screenRank };
+        await this.playMoveSound(player);
+        this.renderer.lastMovedPiece = this.lastMovedPiece;
+        this.renderer.renderBoard(this.game);
+        this.updateGameStatus();
+        this.clearHighlights();
+        this.updateMoveHistory();
+        this.updateButtonStates();
+
+        // Check if AI should move next
+        this.checkForAIMove();
     }
 
     async handleCellClick(file, rank) {
@@ -169,21 +204,26 @@ class MetricChessApp {
             );
              
             if (isValidMove) {
-                // Make the move using board coordinates
-                const movingPlayer = this.game.currentPlayer;
-                this.game.movePiece(this.selectedPiece.file, this.selectedPiece.rank, boardFile, boardRank);
-                const screenCoords = this.transformBoardToScreenCoords(boardFile, boardRank);
-                this.lastMovedPiece = { file: screenCoords.screenFile, rank: screenCoords.screenRank };
-                await this.playMoveSound(movingPlayer);
-                this.renderer.lastMovedPiece = this.lastMovedPiece;
-                this.renderer.renderBoard(this.game);
-                this.updateGameStatus();
-                this.clearHighlights();
-                this.updateMoveHistory();
-                this.updateButtonStates();
+                // Check if this is a pawn promotion move
+                const piece = this.selectedPiece.piece;
+                const isPromotion = piece.type === 'pawn' &&
+                    ((piece.color === 'white' && boardRank === 9) ||
+                     (piece.color === 'black' && boardRank === 0));
 
-                // Check if AI should move next
-                this.checkForAIMove();
+                if (isPromotion) {
+                    // Store the move details for later completion
+                    this.pendingPromotion = {
+                        fromFile: this.selectedPiece.file,
+                        fromRank: this.selectedPiece.rank,
+                        toFile: boardFile,
+                        toRank: boardRank,
+                        player: this.game.currentPlayer
+                    };
+                    this.showPromotionModal();
+                } else {
+                    // Make the move normally
+                    await this.makeMove(this.selectedPiece.file, this.selectedPiece.rank, boardFile, boardRank, this.game.currentPlayer);
+                }
 
                 // Clear selection after move
                 this.selectedPiece = null;
@@ -385,10 +425,11 @@ class MetricChessApp {
         this.audioEnabled = !this.audioEnabled;
         const button = document.getElementById('toggleAudio');
         const icon = button.querySelector('i');
+        const prefix = getFAIconPrefix();
         if (this.audioEnabled) {
-            icon.className = 'fas fa-volume-up';
+            icon.className = `${prefix} fa-volume-up`;
         } else {
-            icon.className = 'fas fa-volume-mute';
+            icon.className = `${prefix} fa-volume-mute`;
         }
         console.log(`Audio ${this.audioEnabled ? 'enabled' : 'disabled'}`);
     }
@@ -447,6 +488,34 @@ class MetricChessApp {
         modal.style.display = 'none';
     }
 
+    showPromotionModal() {
+        const modal = document.getElementById('promotionModal');
+        const heirButton = modal.querySelector('[data-piece="heir"]');
+
+        // Check if promotion square is adjacent to any king
+        const { toFile, toRank } = this.pendingPromotion;
+        const isAdjacent = this.game.isAdjacentToAnyKing(toFile, toRank);
+
+        // Hide heir button if adjacent to enemy king
+        heirButton.style.display = isAdjacent ? 'none' : 'flex';
+
+        modal.style.display = 'flex';
+    }
+
+    hidePromotionModal() {
+        const modal = document.getElementById('promotionModal');
+        modal.style.display = 'none';
+    }
+
+    async completePromotion(pieceType) {
+        if (!this.pendingPromotion) return;
+
+        const { fromFile, fromRank, toFile, toRank, player } = this.pendingPromotion;
+        await this.makeMove(fromFile, fromRank, toFile, toRank, player, pieceType);
+        this.hidePromotionModal();
+        this.pendingPromotion = null;
+    }
+
     startNewGame() {
         const boardOrientation = document.getElementById('boardOrientation').value;
         const gameMode = document.getElementById('gameMode').value;
@@ -494,8 +563,8 @@ class MetricChessApp {
         const spinnerId = player === 'white' ? 'whiteSpinner' : 'blackSpinner';
         const spinner = document.getElementById(spinnerId);
         spinner.classList.add('active');
-        // Add fa-spin to the icon
-        const icon = spinner.querySelector('i');
+        // Add fa-spin to the icon (handle both <i> and <svg>)
+        const icon = spinner.querySelector('i') || spinner.querySelector('svg');
         if (icon) icon.classList.add('fa-spin');
     }
 
@@ -503,8 +572,8 @@ class MetricChessApp {
         const spinnerId = player === 'white' ? 'whiteSpinner' : 'blackSpinner';
         const spinner = document.getElementById(spinnerId);
         spinner.classList.remove('active');
-        // Remove fa-spin from the icon
-        const icon = spinner.querySelector('i');
+        // Remove fa-spin from the icon (handle both <i> and <svg>)
+        const icon = spinner.querySelector('i') || spinner.querySelector('svg');
         if (icon) icon.classList.remove('fa-spin');
     }
     
@@ -550,11 +619,13 @@ class MetricChessApp {
             // Hide AI thinking spinner
             this.hideAIThinking(currentPlayer);
 
+            // For AI, default to queen promotion
             const result = this.game.movePiece(
                 move.fromFile,
                 move.fromRank,
                 move.toFile,
-                move.toRank
+                move.toRank,
+                'queen'
             );
 
             if (result) {
@@ -602,11 +673,13 @@ class MetricChessApp {
         if (allMoves.length > 0) {
             const randomMove = allMoves[Math.floor(Math.random() * allMoves.length)];
             const movingPlayer = this.game.currentPlayer;
+            // For AI fallback, default to queen promotion
             const result = this.game.movePiece(
                 randomMove.from.file,
                 randomMove.from.rank,
                 randomMove.to.file,
-                randomMove.to.rank
+                randomMove.to.rank,
+                'queen'
             );
 
             if (result) {
@@ -646,6 +719,39 @@ class MetricChessApp {
         this.renderer.renderBoard(this.game);
 
         console.log(`Orientation changed to: ${this.game.whitePosition}`);
+    }
+
+    updateStaticIcons() {
+        // Update all static HTML icons to use the configured Font Awesome style
+        const prefixClasses = getFAIconPrefix().split(' ').filter(cls => cls);
+        const prefixString = prefixClasses.join(' ');
+        
+        console.log('Updating static icons with prefix:', prefixString);
+        
+        // Update UI icons based on config overrides
+        document.querySelectorAll('i[data-icon]').forEach(icon => {
+            const key = icon.dataset.icon;
+            const newIcon = getUIIcon(key);
+            
+            // Remove all existing Font Awesome style/prefix classes
+            icon.classList.remove('fa-solid', 'fa-duotone', 'fa-sharp', 'fa-sharp-duotone', 'fa-regular', 'fa-light', 'fa-thin');
+            
+            // Add the new style prefix classes
+            prefixClasses.forEach(cls => icon.classList.add(cls));
+            
+            if (newIcon) {
+                // Remove any existing icon class (starts with fa-)
+                const classes = Array.from(icon.classList);
+                classes.forEach(cls => {
+                    if (cls.startsWith('fa-') && !cls.match(/^fa-(solid|duotone|sharp|sharp-duotone|regular|light|thin)$/)) {
+                        icon.classList.remove(cls);
+                    }
+                });
+                
+                // Add the new icon class
+                icon.classList.add(newIcon);
+            }
+        });
     }
 
     initializeTooltips() {

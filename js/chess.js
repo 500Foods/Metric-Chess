@@ -151,7 +151,15 @@ export class ChessGame {
                 } else {
                     // Non-sliding pieces (king, knight)
                     if (!targetPiece || targetPiece.color !== piece.color) {
-                        moves.push({ file: x, rank: y, capture: !!targetPiece });
+                        let move = { file: x, rank: y, capture: !!targetPiece };
+                        // For kings, check adjacency to any kings
+                        if (piece.type === 'king' || piece.type === 'heir') {
+                            if (!this.isAdjacentToAnyKing(x, y)) {
+                                moves.push(move);
+                            }
+                        } else {
+                            moves.push(move);
+                        }
                     }
                 }
             }
@@ -162,6 +170,12 @@ export class ChessGame {
 
     getAvailableMoves(file, rank) {
         const pseudoMoves = this.getPseudoLegalMoves(file, rank);
+
+        // If the current player has multiple kings, check restrictions don't apply
+        const kingCount = this.countKings(this.currentPlayer);
+        if (kingCount > 1) {
+            return pseudoMoves;
+        }
 
         // Filter out moves that would leave the king in check
         return pseudoMoves.filter(move => {
@@ -273,25 +287,18 @@ export class ChessGame {
         return moves;
     }
 
-    movePiece(fromFile, fromRank, toFile, toRank) {
+    movePiece(fromFile, fromRank, toFile, toRank, promotionPiece = null) {
         const piece = this.board[fromRank][fromFile];
         if (!piece) return false;
-        
+
         // Check if move is valid
         const availableMoves = this.getAvailableMoves(fromFile, fromRank);
         const isValidMove = availableMoves.some(move =>
             move.file === toFile && move.rank === toRank
         );
-        
+
         if (!isValidMove) return false;
         
-        // Check for pawn promotion
-        if (piece.type === 'pawn' &&
-            ((piece.color === 'white' && toRank === 9) ||
-             (piece.color === 'black' && toRank === 0))) {
-            // Promote to queen (default)
-            piece.type = 'queen';
-        }
         
         // Generate move notation
         const moveNotation = this.generateMoveNotation(piece, fromFile, fromRank, toFile, toRank);
@@ -299,6 +306,18 @@ export class ChessGame {
         // Move the piece
         this.board[toRank][toFile] = piece;
         this.board[fromRank][fromFile] = null;
+
+        // Check for pawn promotion
+        if (piece.type === 'pawn' &&
+            ((piece.color === 'white' && toRank === 9) ||
+             (piece.color === 'black' && toRank === 0))) {
+            if (promotionPiece) {
+                piece.type = promotionPiece;
+            } else {
+                // If no promotion piece specified, default to queen (for AI or fallback)
+                piece.type = 'queen';
+            }
+        }
 
         // Check if capture
         const targetPiece = this.board[toRank][toFile];
@@ -403,12 +422,16 @@ export class ChessGame {
     }
 
     isCheck() {
+        // Check only applies when there's exactly one king
+        const kingCount = this.countKings(this.currentPlayer);
+        if (kingCount !== 1) return false;
+
         // Find the king position
         let kingFile, kingRank;
         for (let rank = 0; rank < 10; rank++) {
             for (let file = 0; file < 10; file++) {
                 const piece = this.board[rank][file];
-                if (piece && piece.type === 'king' && piece.color === this.currentPlayer) {
+                if (piece && (piece.type === 'king' || piece.type === 'heir') && piece.color === this.currentPlayer) {
                     kingFile = file;
                     kingRank = rank;
                     break;
@@ -473,6 +496,36 @@ export class ChessGame {
     getPieceIcon(piece) {
         if (!piece) return null;
         return PIECE_ICONS[piece.type];
+    }
+
+    countKings(color) {
+        let count = 0;
+        for (let rank = 0; rank < 10; rank++) {
+            for (let file = 0; file < 10; file++) {
+                const piece = this.board[rank][file];
+                if (piece && piece.color === color && (piece.type === 'king' || piece.type === 'heir')) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    isAdjacentToAnyKing(file, rank) {
+        for (let dr = -1; dr <= 1; dr++) {
+            for (let df = -1; df <= 1; df++) {
+                if (dr === 0 && df === 0) continue;
+                const r = rank + dr;
+                const f = file + df;
+                if (r >= 0 && r < 10 && f >= 0 && f < 10) {
+                    const piece = this.board[r][f];
+                    if (piece && (piece.type === 'king' || piece.type === 'heir')) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     // Generate FEN notation for the current board position

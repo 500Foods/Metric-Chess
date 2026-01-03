@@ -100,11 +100,8 @@ metric-chess/
 ### 🎮 Game Features
 
 - [ ] **Castling**: Implement rook and trebuchet castling rules
-- [ ] **En Passant**: Add special pawn capture rule
 - [ ] **Heir Kings**: Full implementation of promoted king rules
-- [ ] **Game Timer**: Optional clock for each player
 - [ ] **Save/Load Games**: Local storage or file export
-- [ ] **PGN Import/Export**: Standard chess notation support
 
 ### 🎨 UI/UX Enhancements
 
@@ -118,16 +115,164 @@ metric-chess/
 ### 🔧 Technical Improvements
 
 - [ ] **Performance Optimization**: Analyze and optimize rendering
-- [ ] **Error Handling**: Better validation and user feedback
-- [ ] **Testing**: Unit tests for game logic
-- [ ] **Documentation**: JSDoc comments for all methods
-- [ ] **TypeScript**: Consider migration for better type safety
+
+## 🎨 Font Awesome Configuration System
+
+### Overview
+
+Metric Chess uses a flexible configuration system that allows customization of Font Awesome icons and styles through [`metric-chess.json`](metric-chess.json). The system supports both Font Awesome Free (default) and Font Awesome Pro Kits.
+
+NOTE: metrics_chess.json is included in .gitignore so that you can supply a key locally without it being overwritten by the repo (or so that you don't add your key to the repo if you're contributing changes).
+
+### Configuration File
+
+The [`metric-chess.json`](metric-chess.json) file contains three main sections:
+
+```json
+{
+  "fontAwesomeKit": "your-kit-code-here",
+  "fontAwesomeStyle": "fa-sharp-duotone fa-solid",
+  "icons": {
+    "pieces": { ... },
+    "ui": { ... }
+  }
+}
+```
+
+#### Configuration Options
+
+1. **fontAwesomeKit** (optional): Your Font Awesome Pro kit code
+   - If omitted or empty: Uses Font Awesome Free with `fa-solid` style
+   - If provided: Loads the Pro kit and enables style/icon overrides
+
+NOTE: The `fa-solid` style has many icons in it, most in fact, but not all of them.
+For example `fa-atom-simple` is not in the free set but is available in the pro kit.
+
+1. **fontAwesomeStyle** (optional): Font Awesome icon style classes
+   - Only applied when a kit is provided
+   - Can be single class (`"fa-solid"`) or multiple (`"fa-sharp-duotone fa-solid"`)
+   - Ignored if no kit is configured (defaults to `fa-solid`)
+
+1. **icons.pieces**: Icon overrides for chess pieces
+   - `king`, `heir`, `queen`, `rook`, `bishop`, `knight`, `pawn`, `trebuchet`
+   - Example: `"trebuchet": "fa-meteor"`
+
+1. **icons.ui**: Icon overrides for UI elements
+   - `whiteSpinner`, `blackSpinner`, `newGame`, `resetGame`, `undoMove`, `redoMove`
+   - `resignGame`, `rotateLeft`, `rotateRight`, `toggleAudio`
+   - Modal icons: `chessBoard`, `trebuchetFeature`, `heirFeature`, `aiFeature`, `undoFeature`, `responsiveFeature`
+
+### Implementation Details
+
+#### Loading Process ([`js/fontawesome-config.js`](js/fontawesome-config.js))
+
+1. **Loads config on app startup**: `loadFontAwesomeConfig()` is called first in [`js/main.js`](js/main.js:14)
+2. **Validates kit code**: Checks if `fontAwesomeKit` is a non-empty string
+3. **Kit provided**: Loads Pro kit script and applies custom style/icons
+4. **No kit**: Loads Font Awesome Free CDN with `fa-solid` style
+5. **Updates static HTML**: `updateStaticIcons()` applies configured styles to all icons with `data-icon` attributes
+
+#### Icon Style Application
+
+The [`updateStaticIcons()`](js/main.js:724) function in [`js/main.js`](js/main.js) handles style updates:
+
+```javascript
+// Removes all possible FA style classes
+icon.classList.remove('fa-solid', 'fa-duotone', 'fa-sharp', 'fa-sharp-duotone', ...);
+
+// Adds configured style classes
+prefixClasses.forEach(cls => icon.classList.add(cls));
+
+// Updates icon class (e.g., fa-chess-king → fa-meteor)
+icon.classList.add(newIcon);
+```
+
+### SVG vs. `<i>` Element Handling
+
+**Important**: Font Awesome Pro kits can render icons as either `<i>` elements (traditional) or `<svg>` elements (SVG mode). The codebase handles both:
+
+#### CSS Sizing
+
+Both `<i>` and `<svg>` elements need explicit sizing:
+
+```css
+/* Style for <i> tags */
+.ai-spinner i,
+button i,
+.orientation-button i {
+    font-size: 1.875rem;
+}
+
+/* Style for <svg> tags (Pro kits with SVG mode) */
+.ai-spinner svg,
+button svg,
+.orientation-button svg {
+    font-size: 1.875rem;
+}
+```
+
+#### JavaScript Class Manipulation
+
+When adding/removing classes (like `fa-spin` for animations), check for both elements:
+
+```javascript
+// Incorrect - only works with <i> elements
+const icon = spinner.querySelector('i');
+if (icon) icon.classList.add('fa-spin');
+
+// Correct - works with both <i> and <svg>
+const icon = spinner.querySelector('i') || spinner.querySelector('svg');
+if (icon) icon.classList.add('fa-spin');
+```
+
+Examples in codebase:
+
+- **Spinner animations**: [`showAIThinking()`](js/main.js:562) and [`hideAIThinking()`](js/main.js:571)
+- **Icon updates**: [`updateStaticIcons()`](js/main.js:724)
+
+### Default Fallback Behavior
+
+When [`metric-chess.json`](metric-chess.json) is missing, malformed, or has no kit:
+
+- Uses Font Awesome Free 6.4.0 from CDN
+- Applies `fa-solid` as the default style
+- Uses hardcoded default icons from [`js/fontawesome-config.js`](js/fontawesome-config.js:7)
+- No custom icon overrides are applied
+
+### Testing Different Configurations
+
+To test Font Awesome Free (no kit):
+
+```json
+{
+  "fontAwesomeKit": "",
+  "icons": { }
+}
+```
+
+To test Font Awesome Pro with custom style:
+
+```json
+{
+  "fontAwesomeKit": "your-kit-code",
+  "fontAwesomeStyle": "fa-sharp-duotone fa-solid",
+  "icons": {
+    "pieces": {
+      "trebuchet": "fa-meteor"
+    }
+  }
+}
+```
 
 ## 📦 Dependencies
 
 ### Current Dependencies
 
-- **Font Awesome Free**: For chess piece icons (CDN)
+- **Font Awesome**: Icons for chess pieces and UI elements
+  - Free version (CDN) as default fallback
+  - Pro version (kit) optionally configurable via [`metric-chess.json`](metric-chess.json)
+  - See "Font Awesome Configuration System" section for details
+- **Floating UI**: Positioning library for tooltips
 - **Vite**: Build system and development server
 - **Serve**: Simple HTTP server for production builds
 
