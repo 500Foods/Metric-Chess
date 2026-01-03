@@ -156,18 +156,18 @@ While this project is currently under active development, feel free to give it a
 
 <!--CLOC-START -->
 ```cloc
-Last updated at 2026-01-03 01:10:11 UTC
+Last updated at 2026-01-03 01:12:16 UTC
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 JSON                             3              0              0           2026
 JavaScript                       5            143             98            579
-Markdown                         3            106              2            357
+Markdown                         3            106              2            320
 CSS                              2             53             10            291
 HTML                             2              4              6            208
 YAML                             2              8             13             37
 -------------------------------------------------------------------------------
-SUM:                            17            314            129           3498
+SUM:                            17            314            129           3461
 -------------------------------------------------------------------------------
 2 Files were skipped (duplicate, binary, or without source code):
   gitattributes: 1
