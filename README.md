@@ -156,14 +156,14 @@ While this project is currently under active development, feel free to give it a
 
 <!--CLOC-START -->
 ```cloc
-Last updated at 2026-01-03 01:03:33 UTC
+Last updated at 2026-01-03 01:05:17 UTC
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 JavaScript                     398          15808          23750         167642
 JSON                           130             19              0          26756
 TypeScript                     386           4007           9940          18701
-Markdown                       124           5174             41          14832
+Markdown                       124           5174             41          14814
 SVG                              1              0              0           2671
 CSS                              4             45             22           2572
 LESS                            14             34             44           1758
@@ -175,7 +175,7 @@ AppleScript                      1             11             23             61
 make                             1             14              4             32
 INI                              1              8              0             29
 -------------------------------------------------------------------------------
-SUM:                          1094          25202          33886         237268
+SUM:                          1094          25202          33886         237250
 -------------------------------------------------------------------------------
 159 Files were skipped (duplicate, binary, or without source code):
   license: 80
