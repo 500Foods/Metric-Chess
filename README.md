@@ -144,3 +144,93 @@ Write moves like codes—super short!
 Example: 1. P24 P76 2. T03 T83...
 
 That's **all of Metric Chess**—heirs, mega-ts, 10s everywhere! Set up, play a game, use checklist. You'll rule!
+
+
+## Additional Notes
+
+While this project is currently under active development, feel free to give it a try and post any issues you encounter.  Or start a discussion if you would like to help steer the project in a particular direction.  Early days yet, so a good time to have your voice heard.  As the project unfolds, additional resources will be made available, including platform binaries, more documentation, demos, and so on.
+
+## Repository Information
+
+[![Count Lines of Code](https://github.com/500Foods/Metric-Chess/actions/workflows/main.yml/badge.svg)](https://github.com/500Foods/Metric-Chess/actions/workflows/main.yml)
+
+NOTE: Please refer to individual projects for a more nuanced breakdown.
+The Hydrogen project, for example, shows the lines of C code grouped into core project code and unit testing code, and combines C and C header files into the same row, along with providing additional statistics.
+<!--CLOC-START -->
+```cloc
+Last updated at 2026-01-02 15:59:13 UTC
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+JSON                           150             98              0         390392
+C                              875          35916          34319         126099
+SVG                            106            204           2502          94506
+Markdown                       513          14282            122          40611
+Text                            96             97              0          33888
+Lua                            153           3587           3045          24647
+Bourne Shell                   104           4969          71693          23408
+JavaScript                      38           1298           1829           6436
+C/C++ Header                   184           2015           5227           5891
+CSS                             13            354            175           2221
+HTML                            15            167             62           1194
+CMake                           17            171            318           1153
+make                             9             95             60            517
+TOML                             1             55             35            449
+Python                           1             36              9            195
+SQL                              9             14             13            174
+zsh                              2             31             42             97
+Delphi Form                      1              1              0             43
+YAML                             2              8             13             37
+Pascal                           2             11              2             31
+-------------------------------------------------------------------------------
+SUM:                          2291          63409         119466         751989
+-------------------------------------------------------------------------------
+613 Files were skipped (duplicate, binary, or without source code):
+  svg: 464
+  woff2: 30
+  ttf: 22
+  lua: 12
+  md: 9
+  sh: 9
+  css: 6
+  png: 6
+  gitignore: 5
+  json: 4
+  ico: 3
+  jpg: 3
+  lintignore-markdown: 3
+  clp: 2
+  lintignore-bash: 2
+  lintignore-c: 2
+  lintignore-lua: 2
+  lintignore: 2
+  sqruff_db2: 2
+  sqruff_mysql: 2
+  sqruff_postgresql: 2
+  sqruff_sqlite: 2
+  3mf: 1
+  ansi: 1
+  backup: 1
+  br: 1
+  control: 1
+  detailed: 1
+  disabled: 1
+  dproj: 1
+  gcode: 1
+  ggignore: 1
+  gitattributes: 1
+  html: 1
+  payload_generated: 1
+  sqlite: 1
+  stl: 1
+  stylelintcache: 1
+  stylelintrc: 1
+  supp: 1
+  trial-ignore: 1
+```
+<!--CLOC-END-->
+
+## Sponsor / Donate / Support
+
+If you find this work interesting, helpful, or valuable, or that it has saved you time, money, or both, please consider directly supporting these efforts financially via [GitHub Sponsors](https://github.com/sponsors/500Foods) or donating via [Buy Me a Pizza](https://www.buymeacoffee.com/andrewsimard500). Also, check out these other [GitHub Repositories](https://github.com/500Foods?tab=repositories&q=&sort=stargazers) that may interest you.
+
