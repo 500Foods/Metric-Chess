@@ -144,3 +144,75 @@ Write moves like codes—super short!
 Example: 1. P24 P76 2. T03 T83...
 
 That's **all of Metric Chess**—heirs, mega-ts, 10s everywhere! Set up, play a game, use checklist. You'll rule!
+
+
+## Additional Notes
+
+While this project is currently under active development, feel free to give it a try and post any issues you encounter.  Or start a discussion if you would like to help steer the project in a particular direction.  Early days yet, so a good time to have your voice heard.  As the project unfolds, additional resources will be made available, including platform binaries, more documentation, demos, and so on.
+
+## Repository Information
+
+[![Count Lines of Code](https://github.com/500Foods/Metric-Chess/actions/workflows/main.yml/badge.svg)](https://github.com/500Foods/Metric-Chess/actions/workflows/main.yml)
+
+<!--CLOC-START -->
+```cloc
+Last updated at 2026-01-03 01:05:17 UTC
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+JavaScript                     398          15808          23750         167642
+JSON                           130             19              0          26756
+TypeScript                     386           4007           9940          18701
+Markdown                       124           5174             41          14814
+SVG                              1              0              0           2671
+CSS                              4             45             22           2572
+LESS                            14             34             44           1758
+SCSS                            14             34             44           1758
+HTML                             2              2              4            198
+YAML                            14             24             14            190
+Text                             4             22              0             68
+AppleScript                      1             11             23             61
+make                             1             14              4             32
+INI                              1              8              0             29
+-------------------------------------------------------------------------------
+SUM:                          1094          25202          33886         237250
+-------------------------------------------------------------------------------
+159 Files were skipped (duplicate, binary, or without source code):
+  license: 80
+  json: 20
+  ts: 20
+  esbuild: 3
+  npmignore: 3
+  cts: 2
+  eslintrc: 2
+  lock: 2
+  node-which: 2
+  rollup: 2
+  txt: 2
+  yarnrc: 2
+  apache2: 1
+  bsd: 1
+  editorconfig: 1
+  eot: 1
+  gitattributes: 1
+  gitignore: 1
+  is-docker: 1
+  mit: 1
+  nanoid: 1
+  node: 1
+  nycrc: 1
+  otf: 1
+  rc: 1
+  serve: 1
+  ttf: 1
+  vite: 1
+  woff2: 1
+  woff: 1
+  xsel: 1
+```
+<!--CLOC-END-->
+
+## Sponsor / Donate / Support
+
+If you find this work interesting, helpful, or valuable, or that it has saved you time, money, or both, please consider directly supporting these efforts financially via [GitHub Sponsors](https://github.com/sponsors/500Foods) or donating via [Buy Me a Pizza](https://www.buymeacoffee.com/andrewsimard500). Also, check out these other [GitHub Repositories](https://github.com/500Foods?tab=repositories&q=&sort=stargazers) that may interest you.
+
