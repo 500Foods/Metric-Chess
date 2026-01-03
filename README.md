@@ -156,59 +156,22 @@ While this project is currently under active development, feel free to give it a
 
 <!--CLOC-START -->
 ```cloc
-Last updated at 2026-01-03 01:05:17 UTC
+Last updated at 2026-01-03 01:10:11 UTC
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-JavaScript                     398          15808          23750         167642
-JSON                           130             19              0          26756
-TypeScript                     386           4007           9940          18701
-Markdown                       124           5174             41          14814
-SVG                              1              0              0           2671
-CSS                              4             45             22           2572
-LESS                            14             34             44           1758
-SCSS                            14             34             44           1758
-HTML                             2              2              4            198
-YAML                            14             24             14            190
-Text                             4             22              0             68
-AppleScript                      1             11             23             61
-make                             1             14              4             32
-INI                              1              8              0             29
+JSON                             3              0              0           2026
+JavaScript                       5            143             98            579
+Markdown                         3            106              2            357
+CSS                              2             53             10            291
+HTML                             2              4              6            208
+YAML                             2              8             13             37
 -------------------------------------------------------------------------------
-SUM:                          1094          25202          33886         237250
+SUM:                            17            314            129           3498
 -------------------------------------------------------------------------------
-159 Files were skipped (duplicate, binary, or without source code):
-  license: 80
-  json: 20
-  ts: 20
-  esbuild: 3
-  npmignore: 3
-  cts: 2
-  eslintrc: 2
-  lock: 2
-  node-which: 2
-  rollup: 2
-  txt: 2
-  yarnrc: 2
-  apache2: 1
-  bsd: 1
-  editorconfig: 1
-  eot: 1
+2 Files were skipped (duplicate, binary, or without source code):
   gitattributes: 1
   gitignore: 1
-  is-docker: 1
-  mit: 1
-  nanoid: 1
-  node: 1
-  nycrc: 1
-  otf: 1
-  rc: 1
-  serve: 1
-  ttf: 1
-  vite: 1
-  woff2: 1
-  woff: 1
-  xsel: 1
 ```
 <!--CLOC-END-->
 
