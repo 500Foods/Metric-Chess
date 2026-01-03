@@ -340,12 +340,21 @@ button:hover {
     margin-left: 10px;
 }
 
+/* Orientation Toggle Button - now in game controls */
+#toggleOrientation {
+    background-color: #2ecc71;
+}
+
+#toggleOrientation:hover {
+    background-color: #27ae60;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
     .chess-piece {
         font-size: 2rem;
     }
-    
+     
     .game-controls {
         flex-direction: column;
         gap: 10px;

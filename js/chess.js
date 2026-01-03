@@ -49,6 +49,9 @@ export class ChessGame {
         this.capturedPieces = { white: [], black: [] };
         this.moveCount = 0;
         this.moveNotation = [];
+        this.bottomPlayerType = 'human'; // Default to human
+        this.topPlayerType = 'human';    // Default to human
+        this.whitePosition = 'bottom';   // 'bottom', 'top', 'left', 'right'
         
         // Initialize the board with Metric Chess setup
         this.reset();
@@ -59,10 +62,12 @@ export class ChessGame {
         this.board = Array(10).fill().map(() => Array(10).fill(null));
         this.currentPlayer = 'white';
         this.gameHistory = [];
+        this.redoStack = [];
         this.capturedPieces = { white: [], black: [] };
         this.moveCount = 0;
+        this.moveNotation = [];
         
-        // Set up white pieces (rank 0 and 1)
+        // Set up white pieces (rank 0 and 1) - DATA: white at bottom
         this.board[0][0] = { type: 'trebuchet', color: 'white' };
         this.board[0][1] = { type: 'rook', color: 'white' };
         this.board[0][2] = { type: 'knight', color: 'white' };
@@ -79,7 +84,7 @@ export class ChessGame {
             this.board[1][file] = { type: 'pawn', color: 'white' };
         }
         
-        // Set up black pieces (rank 9 and 8)
+        // Set up black pieces (rank 9 and 8) - DATA: black at top
         this.board[9][0] = { type: 'trebuchet', color: 'black' };
         this.board[9][1] = { type: 'rook', color: 'black' };
         this.board[9][2] = { type: 'knight', color: 'black' };
@@ -199,19 +204,19 @@ export class ChessGame {
         const moves = [];
         const piece = this.board[rank][file];
         const direction = piece.color === 'white' ? 1 : -1;
-        
+         
         // Forward movement - pawns can always move 1 or 2 squares
         const oneStep = rank + direction;
         if (oneStep >= 0 && oneStep < 10 && !this.board[oneStep][file]) {
             moves.push({ file: file, rank: oneStep, capture: false });
-            
+             
             // Two steps forward (always allowed if path is clear)
             const twoSteps = rank + (direction * 2);
             if (twoSteps >= 0 && twoSteps < 10 && !this.board[twoSteps][file]) {
                 moves.push({ file: file, rank: twoSteps, capture: false });
             }
         }
-        
+         
         // Captures (diagonal)
         const captureFiles = [file - 1, file + 1];
         for (const captureFile of captureFiles) {
@@ -225,7 +230,7 @@ export class ChessGame {
                 }
             }
         }
-        
+         
         return moves;
     }
 

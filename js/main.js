@@ -10,6 +10,11 @@ class MetricChessApp {
         this.selectedPiece = null;
         this.availableMoves = [];
         
+        // Set default game mode: human vs AI with white at bottom
+        this.game.bottomPlayerType = 'human';
+        this.game.topPlayerType = 'ai';
+        this.game.whitePosition = 'bottom';
+        
         // Initialize the application
         this.initialize();
     }
@@ -17,15 +22,18 @@ class MetricChessApp {
     initialize() {
         // Set up the chess board
         this.renderer.initializeBoard();
-        
+         
         // Render initial game state
         this.renderer.renderBoard(this.game.board);
-        
+         
         // Set up event listeners
         this.setupEventListeners();
-        
+         
         // Update game status
         this.updateGameStatus();
+        
+        // Check if AI should make the first move (black AI in default setup)
+        this.checkForAIMove();
     }
 
     setupEventListeners() {
@@ -72,6 +80,11 @@ class MetricChessApp {
             this.showGameSetupModal();
         });
         
+        // Orientation toggle button
+        document.getElementById('toggleOrientation').addEventListener('click', () => {
+            this.cycleOrientation();
+        });
+        
         // Game setup modal buttons
         document.getElementById('startGame').addEventListener('click', () => {
             this.startNewGame();
@@ -83,37 +96,40 @@ class MetricChessApp {
     }
 
     handleCellClick(file, rank) {
-        const piece = this.game.board[rank][file];
+        // Transform the clicked coordinates back to board coordinates based on orientation
+        const { boardFile, boardRank } = this.transformScreenToBoardCoords(file, rank);
         
+        const piece = this.game.board[boardRank][boardFile];
+         
         // If we have a selected piece and clicked on a different cell
-        if (this.selectedPiece && (this.selectedPiece.file !== file || this.selectedPiece.rank !== rank)) {
+        if (this.selectedPiece && (this.selectedPiece.file !== boardFile || this.selectedPiece.rank !== boardRank)) {
             // Check if the clicked cell is a valid move
-            const isValidMove = this.availableMoves.some(move => 
-                move.file === file && move.rank === rank
+            const isValidMove = this.availableMoves.some(move =>
+                move.file === boardFile && move.rank === boardRank
             );
-            
+             
             if (isValidMove) {
-                // Make the move
-                this.game.movePiece(this.selectedPiece.file, this.selectedPiece.rank, file, rank);
-                this.renderer.renderBoard(this.game.board);
+                // Make the move using board coordinates
+                this.game.movePiece(this.selectedPiece.file, this.selectedPiece.rank, boardFile, boardRank);
+                this.renderer.renderBoard(this.game);
                 this.updateGameStatus();
                 this.clearHighlights();
                 this.updateMoveHistory();
                 return;
             }
         }
-        
+         
         // If we clicked on a piece of the current player's color
         if (piece && piece.color === this.game.currentPlayer) {
-            // Calculate available moves
-            this.availableMoves = this.game.getAvailableMoves(file, rank);
-            
-            // Highlight the selected piece and available moves
+            // Calculate available moves using board coordinates
+            this.availableMoves = this.game.getAvailableMoves(boardFile, boardRank);
+             
+            // Highlight the selected piece and available moves (using screen coordinates)
             this.renderer.highlightPiece(file, rank, 'selected-piece');
-            this.renderer.highlightMoves(this.availableMoves);
-            
-            // Store the selected piece
-            this.selectedPiece = { file, rank, piece };
+            this.renderer.highlightMoves(this.availableMoves, this.game.whitePosition);
+             
+            // Store the selected piece with board coordinates
+            this.selectedPiece = { file: boardFile, rank: boardRank, piece };
         } else {
             // Clear selection if clicking on empty cell or opponent's piece
             this.clearHighlights();
@@ -122,6 +138,64 @@ class MetricChessApp {
         }
     }
 
+    transformScreenToBoardCoords(screenFile, screenRank) {
+        const whitePosition = this.game.whitePosition || 'bottom';
+        let boardFile = screenFile;
+        let boardRank = screenRank;
+        
+        switch (whitePosition) {
+            case 'top':
+                // Flip vertically
+                boardRank = 9 - screenRank;
+                break;
+            case 'left':
+                // Rotate 90 degrees counter-clockwise
+                boardFile = screenRank;
+                boardRank = 9 - screenFile;
+                break;
+            case 'right':
+                // Rotate 90 degrees clockwise
+                boardFile = 9 - screenRank;
+                boardRank = screenFile;
+                break;
+            case 'bottom':
+            default:
+                // No transformation
+                break;
+        }
+        
+        return { boardFile, boardRank };
+    }
+    
+    transformBoardToScreenCoords(boardFile, boardRank) {
+        const whitePosition = this.game.whitePosition || 'bottom';
+        let screenFile = boardFile;
+        let screenRank = boardRank;
+        
+        switch (whitePosition) {
+            case 'top':
+                // Flip vertically
+                screenRank = 9 - boardRank;
+                break;
+            case 'left':
+                // Rotate 90 degrees counter-clockwise
+                screenFile = boardRank;
+                screenRank = 9 - boardFile;
+                break;
+            case 'right':
+                // Rotate 90 degrees clockwise
+                screenFile = 9 - boardRank;
+                screenRank = boardFile;
+                break;
+            case 'bottom':
+            default:
+                // No transformation
+                break;
+        }
+        
+        return { screenFile, screenRank };
+    }
+    
     clearHighlights() {
         this.renderer.clearHighlights();
     }
@@ -176,67 +250,108 @@ class MetricChessApp {
     startNewGame() {
         const boardOrientation = document.getElementById('boardOrientation').value;
         const gameMode = document.getElementById('gameMode').value;
-        
-        // Reset the game
+          
+        // Reset the game - this creates a fresh board and clears history
         this.game.reset();
-        
+        this.game.gameHistory = [];
+        this.game.redoStack = [];
+        this.game.moveNotation = [];
+        this.game.moveCount = 0;
+          
         // Set up board orientation based on selection
-        if (boardOrientation === 'black-bottom') {
-            // Flip the board so black pieces are at the bottom
-            this.flipBoardOrientation();
-        } else {
-            // Ensure normal orientation (white at bottom)
-            this.ensureNormalOrientation();
-        }
-        
+        this.game.whitePosition = boardOrientation.replace('white-', '');
+          
         // Parse game mode to determine AI players
         const [bottomPlayer, topPlayer] = gameMode.split('-');
         this.game.bottomPlayerType = bottomPlayer;
         this.game.topPlayerType = topPlayer;
-        
-        // Set current player based on orientation
-        this.game.currentPlayer = boardOrientation === 'black-bottom' ? 'black' : 'white';
-        
-        this.renderer.renderBoard(this.game.board);
+          
+        // Set current player (always white goes first)
+        this.game.currentPlayer = 'white';
+          
+        // Re-render with new orientation
+        this.renderer.renderBoard(this.game);
         this.updateGameStatus();
         this.clearHighlights();
         this.updateMoveHistory();
-        
+          
         this.hideGameSetupModal();
-        
+          
         console.log(`Starting new game: ${gameMode} with ${boardOrientation}`);
+        console.log(`White position: ${this.game.whitePosition}`);
         console.log(`Bottom: ${bottomPlayer}, Top: ${topPlayer}`);
-        
-        // TODO: Implement AI logic when fairy-stockfish is integrated
+          
+        // Check if AI needs to make a move
+        this.checkForAIMove();
     }
-
-    flipBoardOrientation() {
-        // Flip the board so black pieces are at the bottom
-        const flippedBoard = Array(10).fill().map(() => Array(10).fill(null));
+    
+    checkForAIMove() {
+        // Check if it's AI's turn
+        const currentPlayer = this.game.currentPlayer;
+        const playerType = currentPlayer === 'white' ? this.game.bottomPlayerType : this.game.topPlayerType;
+        
+        if (playerType === 'ai') {
+            // For now, make a simple random move for AI
+            // This will be replaced with fairy-stockfish integration later
+            setTimeout(() => {
+                this.makeSimpleAIMove();
+            }, 1000); // Small delay to simulate thinking
+        }
+    }
+    
+    makeSimpleAIMove() {
+        // Find all possible moves for the AI
+        const allMoves = [];
         
         for (let rank = 0; rank < 10; rank++) {
             for (let file = 0; file < 10; file++) {
                 const piece = this.game.board[rank][file];
-                if (piece) {
-                    // Flip both rank and file to maintain proper orientation
-                    flippedBoard[9 - rank][9 - file] = {
-                        ...piece,
-                        // Keep original color but note it's flipped for move logic
-                        flipped: true
-                    };
+                if (piece && piece.color === this.game.currentPlayer) {
+                    const moves = this.game.getAvailableMoves(file, rank);
+                    moves.forEach(move => {
+                        allMoves.push({
+                            from: { file, rank },
+                            to: { file: move.file, rank: move.rank },
+                            piece: piece
+                        });
+                    });
                 }
             }
         }
         
-        // Store the flipped board for rendering
-        this.game.flippedBoard = flippedBoard;
-        this.game.boardOrientation = 'flipped';
+        // If there are valid moves, make a random one
+        if (allMoves.length > 0) {
+            const randomMove = allMoves[Math.floor(Math.random() * allMoves.length)];
+            const result = this.game.movePiece(
+                randomMove.from.file,
+                randomMove.from.rank,
+                randomMove.to.file,
+                randomMove.to.rank
+            );
+            
+            if (result) {
+                this.renderer.renderBoard(this.game.board);
+                this.updateGameStatus();
+                this.clearHighlights();
+                this.updateMoveHistory();
+                
+                // Check if the next player is also AI
+                this.checkForAIMove();
+            }
+        }
     }
 
-    ensureNormalOrientation() {
-        // Ensure normal orientation (white at bottom)
-        this.game.boardOrientation = 'normal';
-        delete this.game.flippedBoard;
+    // Orientation toggle methods
+    cycleOrientation() {
+        const orientations = ['bottom', 'right', 'top', 'left'];
+        const currentIndex = orientations.indexOf(this.game.whitePosition);
+        const nextIndex = (currentIndex + 1) % orientations.length;
+        this.game.whitePosition = orientations[nextIndex];
+        
+        // Re-render with new orientation
+        this.renderer.renderBoard(this.game);
+        
+        console.log(`Orientation changed to: ${this.game.whitePosition}`);
     }
 }
 

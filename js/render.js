@@ -8,42 +8,70 @@ export class ChessRenderer {
     initializeBoard() {
         // Clear existing board
         this.boardElement.innerHTML = '';
-        
+         
         // Create 10x10 grid
         for (let rank = 0; rank < 10; rank++) {
             for (let file = 0; file < 10; file++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
                 cell.dataset.coord = `${file}${rank}`;
-                
+                 
                 // Set chessboard pattern - (file + rank) % 2 === 0 for light squares
                 if ((file + rank) % 2 === 0) {
                     cell.classList.add('light-square');
                 } else {
                     cell.classList.add('dark-square');
                 }
-                
+                 
                 this.boardElement.appendChild(cell);
             }
         }
     }
 
-    renderBoard(board) {
+    renderBoard(game) {
         // Clear existing pieces
         const existingPieces = document.querySelectorAll('.chess-piece');
         existingPieces.forEach(piece => piece.remove());
-        
-        // Check if we have a flipped board
-        const actualBoard = board.flippedBoard || board;
-        
-        // Render each piece
+         
+        // Get the white position for rendering orientation
+        const whitePosition = game.whitePosition || 'bottom';
+        const board = game.board;
+         
+        // Render each piece with coordinate transformation based on orientation
         for (let rank = 0; rank < 10; rank++) {
             for (let file = 0; file < 10; file++) {
-                const piece = actualBoard[rank][file];
+                const piece = board[rank][file];
                 if (piece) {
                     // Use original color for rendering
                     const color = piece.color;
-                    this.renderPiece(file, rank, { ...piece, color });
+                    
+                    // Transform coordinates based on white position
+                    let renderFile = file;
+                    let renderRank = rank;
+                    
+                    switch (whitePosition) {
+                        case 'top':
+                            // Flip vertically - white at top
+                            renderRank = 9 - rank;
+                            break;
+                        case 'left':
+                            // Rotate 90 degrees counter-clockwise - white at left
+                            renderFile = rank;
+                            renderRank = 9 - file;
+                            break;
+                        case 'right':
+                            // Rotate 90 degrees clockwise - white at right
+                            renderFile = 9 - rank;
+                            renderRank = file;
+                            break;
+                        case 'bottom':
+                        default:
+                            // Normal orientation - white at bottom
+                            // No transformation needed
+                            break;
+                    }
+                    
+                    this.renderPiece(renderFile, renderRank, { ...piece, color });
                 }
             }
         }
@@ -91,13 +119,35 @@ export class ChessRenderer {
         }
     }
 
-    highlightMoves(moves) {
+    highlightMoves(moves, whitePosition = 'bottom') {
         // Clear existing move highlights
         this.clearMoveHighlights();
-        
-        // Highlight each available move
+          
+        // Highlight each available move with coordinate transformation
         moves.forEach(move => {
-            const cell = this.getCellElement(move.file, move.rank);
+            // Transform board coordinates to screen coordinates based on orientation
+            let screenFile = move.file;
+            let screenRank = move.rank;
+            
+            switch (whitePosition) {
+                case 'top':
+                    screenRank = 9 - move.rank;
+                    break;
+                case 'left':
+                    screenFile = move.rank;
+                    screenRank = 9 - move.file;
+                    break;
+                case 'right':
+                    screenFile = 9 - move.rank;
+                    screenRank = move.file;
+                    break;
+                case 'bottom':
+                default:
+                    // No transformation
+                    break;
+            }
+            
+            const cell = this.getCellElement(screenFile, screenRank);
             if (cell) {
                 const highlight = document.createElement('div');
                 highlight.className = `highlight ${move.capture ? 'capture-move' : 'available-move'}`;

@@ -66,6 +66,7 @@
             <button id="resetGame">Reset Game</button>
             <button id="undoMove">Undo Move</button>
             <button id="redoMove">Redo Move</button>
+            <button id="toggleOrientation">🔄 Orientation</button>
             <div class="game-status" id="gameStatus">White's turn</div>
         </div>
         
@@ -81,18 +82,20 @@
         <div class="modal-content">
             <h2>New Game Setup</h2>
             <div class="setup-option">
-                <label for="boardOrientation">Board Orientation:</label>
+                <label for="boardOrientation">White Position:</label>
                 <select id="boardOrientation">
-                    <option value="white-bottom">White at Bottom</option>
-                    <option value="black-bottom">Black at Bottom</option>
+                    <option value="white-bottom" selected>Bottom</option>
+                    <option value="white-top">Top</option>
+                    <option value="white-left">Left</option>
+                    <option value="white-right">Right</option>
                 </select>
-                <p class="orientation-hint">The first player in the game mode will be at the bottom</p>
+                <p class="orientation-hint">Where should white pieces be positioned?</p>
             </div>
             <div class="setup-option">
                 <label for="gameMode">Game Mode:</label>
                 <select id="gameMode">
                     <option value="human-human">Human vs Human</option>
-                    <option value="human-ai">Human vs AI</option>
+                    <option value="human-ai" selected>Human vs AI</option>
                     <option value="ai-human">AI vs Human</option>
                     <option value="ai-ai">AI vs AI</option>
                 </select>
