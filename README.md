@@ -154,8 +154,6 @@ While this project is currently under active development, feel free to give it a
 
 [![Count Lines of Code](https://github.com/500Foods/Metric-Chess/actions/workflows/main.yml/badge.svg)](https://github.com/500Foods/Metric-Chess/actions/workflows/main.yml)
 
-NOTE: Please refer to individual projects for a more nuanced breakdown.
-The Hydrogen project, for example, shows the lines of C code grouped into core project code and unit testing code, and combines C and C header files into the same row, along with providing additional statistics.
 <!--CLOC-START -->
 ```cloc
 Last updated at 2026-01-03 01:03:33 UTC
