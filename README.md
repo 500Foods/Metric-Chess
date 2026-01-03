@@ -156,19 +156,19 @@ While this project is currently under active development, feel free to give it a
 
 <!--CLOC-START -->
 ```cloc
-Last updated at 2026-01-03 09:41:06 UTC
+Last updated at 2026-01-03 09:42:49 UTC
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-JSON                             3              0              0           2034
+JSON                             3              0              0           2152
 JavaScript                      10            402            319           1827
 CSS                              2             85             13            452
-Markdown                         3            136              2            407
+Markdown                         3            136              2            410
 HTML                             2              5              8            281
 Text                             1             11              0             93
 YAML                             2              8             13             37
 -------------------------------------------------------------------------------
-SUM:                            23            647            355           5131
+SUM:                            23            647            355           5252
 -------------------------------------------------------------------------------
 6 Files were skipped (duplicate, binary, or without source code):
   wasm: 3
