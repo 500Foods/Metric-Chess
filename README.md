@@ -171,26 +171,29 @@ While this project is currently under active development, feel free to give it a
 
 <!--CLOC-START -->
 ```cloc
-Last updated at 2026-01-03 23:48:46 UTC
+Last updated at 2026-01-04 01:15:42 UTC
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-JSON                             4              0              0           2069
-JavaScript                      10            413            322           1907
-CSS                              2             88             14            488
-Markdown                         3            136              2            411
-HTML                             2              5              9            283
-Text                             1             11              0             93
+JSON                             6              0              0           7105
+JavaScript                      15            457            365           2294
+CSS                              2             97             16            583
+Markdown                         3            187              2            545
+HTML                             2              8             14            398
 YAML                             2              8             13             37
+SVG                              1              0              0             31
 -------------------------------------------------------------------------------
-SUM:                            24            661            360           5288
+SUM:                            31            757            410          10993
 -------------------------------------------------------------------------------
-8 Files were skipped (duplicate, binary, or without source code):
-  wasm: 3
+15 Files were skipped (duplicate, binary, or without source code):
+  wasm: 5
+  js: 3
   woff2: 2
   broken: 1
   gitattributes: 1
   gitignore: 1
+  json: 1
+  svg: 1
 ```
 <!--CLOC-END-->
 
