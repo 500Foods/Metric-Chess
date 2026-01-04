@@ -124,13 +124,15 @@ body {
 
 /* Floating UI Tooltips */
 .tooltip {
-    display: none;
+    display: block;
+    visibility: hidden;
     position: absolute;
     background: #555;
     color: white;
     padding: 8px 12px;
     border-radius: 6px;
     border: 3px solid #333;
+    pointer-events: none;
     font-size: 14px;
     white-space: nowrap;
     z-index: 10000;
@@ -145,6 +147,16 @@ body {
         drop-shadow( 1px -1px 0px rgba(255, 255, 255, 0.1))
         drop-shadow(-1px  1px 0px rgba(255, 255, 255, 0.1))
         ;
+    transform: translateY(-3px);
+    opacity: 0;
+    transition: opacity 0.4 ease-in-out, visibility 0s linear 0.4s;
+}
+
+.tooltip.show {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0px);
+    transition: opacity 0.4s ease-in-out;
 }
 
 .tooltip-arrow {
@@ -202,7 +214,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 15px;
+    gap: 10px;
     padding: 10px;
     background-color: #34495e;
     flex-wrap: wrap;
@@ -221,6 +233,16 @@ body {
     opacity: 0.3;
     transition: opacity 0.3s;
 }
+#whiteSpinner {
+    justify-content: start;
+    width: 80px;
+    margin-left: -7px;
+}
+#blackSpinner {
+    justify-content: end;
+    width: 80px;      
+    margin-right: -7px;
+}
 
 .ai-spinner.active {
     opacity: 1;
@@ -228,17 +250,25 @@ body {
 
 .ai-spinner.white-thinking {
     color: #ffffff;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    filter:
+        drop-shadow( 1px  1px 0px rgba(0, 0, 0, 0.5))
+        drop-shadow(-1px -1px 0px rgba(0, 0, 0, 0.5))
+        drop-shadow( 1px -1px 0px rgba(0, 0, 0, 0.5))
+        drop-shadow(-1px  1px 0px rgba(0, 0, 0, 0.5));
 }
 
 .ai-spinner.black-thinking {
-    color: #333333;
-    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+    color: #000000;
+    filter:
+        drop-shadow( 1px  1px 0px rgba(255, 255, 255, 0.1))
+        drop-shadow(-1px -1px 0px rgba(255, 255, 255, 0.1))
+        drop-shadow( 1px -1px 0px rgba(255, 255, 255, 0.1))
+        drop-shadow(-1px  1px 0px rgba(255, 255, 255, 0.1));
 }
 
 .ai-spinner svg,
 .ai-spinner i {
-    font-size: 1.875rem;
+    font-size: 2.875rem;
 }
 
 button {

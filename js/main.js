@@ -5,9 +5,10 @@ import { loadFontAwesomeConfig, getFAIconPrefix, getUIIcon } from './fontawesome
 
 // Main application class
 class MetricChessApp {
-    constructor() {
-        this.initializeApp();
-    }
+   constructor() {
+       this.gameEnded = false;
+       this.initializeApp();
+   }
 
     async initializeApp() {
         // Load Font Awesome config first
@@ -77,6 +78,7 @@ class MetricChessApp {
         // Reset game button
         document.getElementById('resetGame').addEventListener('click', () => {
             this.game.reset();
+            this.gameEnded = false; // Reset game-ending flag
             this.lastMovedPiece = null;
             this.renderer.lastMovedPiece = null;
             this.renderer.renderBoard(this.game);
@@ -90,6 +92,7 @@ class MetricChessApp {
         document.getElementById('undoMove').addEventListener('click', () => {
             const undoneMove = this.game.gameHistory[this.game.gameHistory.length - 1]; // Get the move before undoing
             this.game.undoMove();
+            this.gameEnded = false; // Reset game-ending flag on undo
             if (undoneMove) {
                 const screenCoords = this.transformBoardToScreenCoords(undoneMove.fromFile, undoneMove.fromRank);
                 this.lastMovedPiece = { file: screenCoords.screenFile, rank: screenCoords.screenRank };
@@ -108,6 +111,7 @@ class MetricChessApp {
         document.getElementById('redoMove').addEventListener('click', () => {
             const redoneMove = this.game.redoStack[this.game.redoStack.length - 1]; // Get the move before redoing
             this.game.redoMove();
+            this.gameEnded = false; // Reset game-ending flag on redo
             if (redoneMove) {
                 const screenCoords = this.transformBoardToScreenCoords(redoneMove.toFile, redoneMove.toRank);
                 this.lastMovedPiece = { file: screenCoords.screenFile, rank: screenCoords.screenRank };
@@ -191,18 +195,24 @@ class MetricChessApp {
     }
 
     async handleCellClick(file, rank) {
+        // Check if game has ended
+        if (this.gameEnded) {
+            console.log('Game has ended, ignoring cell click');
+            return;
+        }
+
         // Transform the clicked coordinates back to board coordinates based on orientation
         const { boardFile, boardRank } = this.transformScreenToBoardCoords(file, rank);
-        
-        const piece = this.game.board[boardRank][boardFile];
          
+        const piece = this.game.board[boardRank][boardFile];
+          
         // If we have a selected piece and clicked on a different cell
         if (this.selectedPiece && (this.selectedPiece.file !== boardFile || this.selectedPiece.rank !== boardRank)) {
             // Check if the clicked cell is a valid move
             const isValidMove = this.availableMoves.some(move =>
                 move.file === boardFile && move.rank === boardRank
             );
-             
+              
             if (isValidMove) {
                 // Check if this is a pawn promotion move
                 const piece = this.selectedPiece.piece;
@@ -231,7 +241,7 @@ class MetricChessApp {
                 return;
             }
         }
-         
+          
         // If we clicked on a piece of the current player's color
         if (piece && piece.color === this.game.currentPlayer) {
             // Check if it's already selected
@@ -243,7 +253,7 @@ class MetricChessApp {
             } else {
                 // Calculate available moves using board coordinates
                 this.availableMoves = this.game.getAvailableMoves(boardFile, boardRank);
-
+ 
                 // Highlight the selected piece and available moves (using screen coordinates)
                 this.renderer.highlightPiece(file, rank, 'selected-piece');
                 this.renderer.highlightMoves(this.availableMoves, this.game.whitePosition);
@@ -396,29 +406,55 @@ class MetricChessApp {
 
     updateGameStatus() {
         const statusElement = document.getElementById('gameStatus');
-        statusElement.textContent = `${this.game.currentPlayer.charAt(0).toUpperCase() + this.game.currentPlayer.slice(1)}'s turn`;
-
-        if (this.game.isCheck()) {
-            statusElement.textContent += ' - CHECK!';
-        }
-
+        
+        // Check for game-ending conditions first
         if (this.game.isCheckmate()) {
-            statusElement.textContent = `CHECKMATE! ${this.game.currentPlayer === 'white' ? 'Black' : 'White'} wins!`;
+            statusElement.textContent = `CHECKMATE! ${this.game.currentPlayer === 'white' ? 'Dark' : 'Light'} wins!`;
         } else if (this.game.isStalemate()) {
-            statusElement.textContent = 'STALEMATE! It\'s a draw!';
+            statusElement.textContent = 'STALEMATE - No winner';
+        } else {
+            // Normal game states
+            const currentPlayerColor = this.game.currentPlayer === 'white' ? 'Light' : 'Dark';
+            const opponentColor = this.game.currentPlayer === 'white' ? 'Dark' : 'Light';
+            
+            if (this.game.isCheck()) {
+                statusElement.textContent = `${currentPlayerColor} is in CHECK!`;
+            } else {
+                // Check if AI is thinking
+                const isAIThinking = this.game.bottomPlayerType === 'ai' && this.game.currentPlayer === 'white' ||
+                                   this.game.topPlayerType === 'ai' && this.game.currentPlayer === 'black';
+                
+                if (isAIThinking) {
+                    statusElement.textContent = `${currentPlayerColor} is thinking...`;
+                } else {
+                    statusElement.textContent = `Waiting for ${currentPlayerColor} to play`;
+                }
+            }
         }
     }
 
     resignGame() {
         // Resign the current player
-        const winner = this.game.currentPlayer === 'white' ? 'Black' : 'White';
-        alert(`${this.game.currentPlayer.charAt(0).toUpperCase() + this.game.currentPlayer.slice(1)} resigns! ${winner} wins!`);
-        // Reset or start new game
-        this.game.reset();
-        this.renderer.renderBoard(this.game);
+        const currentPlayerColor = this.game.currentPlayer === 'white' ? 'Light' : 'Dark';
+        const statusElement = document.getElementById('gameStatus');
+        statusElement.textContent = `${currentPlayerColor} has RESIGNED`;
+        
+        // Set game-ending flag to prevent further moves
+        this.gameEnded = true;
+        
+        // Stop any AI thinking processes
+        this.hideAIThinking('white');
+        this.hideAIThinking('black');
+        
+        // Stop the AI engine if it's thinking
+        if (this.game.aiEngine && typeof this.game.aiEngine.stop === 'function') {
+            this.game.aiEngine.stop();
+        }
+        
+        // Clear any highlights and selections
         this.clearHighlights();
-        this.updateMoveHistory();
-        this.updateButtonStates();
+        this.selectedPiece = null;
+        this.availableMoves = [];
     }
 
     toggleAudio() {
@@ -523,6 +559,7 @@ class MetricChessApp {
 
         // Reset the game completely
         this.game.reset();
+        this.gameEnded = false; // Reset game-ending flag
 
         // Set up board orientation based on selection
         this.game.whitePosition = boardOrientation.replace('white-', '');
@@ -578,6 +615,12 @@ class MetricChessApp {
     }
     
     checkForAIMove() {
+        // Check if game has ended (by resignation or other means)
+        if (this.gameEnded) {
+            console.log('Game has ended, no AI move');
+            return;
+        }
+
         // Check if game is over
         if (this.game.isCheckmate() || this.game.isStalemate()) {
             console.log('Game is over, no AI move');
@@ -612,12 +655,25 @@ class MetricChessApp {
     }
     
     async makeSimpleAIMove() {
+        // Check if game has ended before making the move
+        if (this.gameEnded) {
+            console.log('Game has ended, skipping AI move');
+            this.hideAIThinking(this.game.currentPlayer);
+            return;
+        }
+
         const currentPlayer = this.game.currentPlayer;
 
         // Use fairy-stockfish AI
         this.game.getAIMove(async (move) => {
             // Hide AI thinking spinner
             this.hideAIThinking(currentPlayer);
+
+            // Check again in case game ended while AI was thinking
+            if (this.gameEnded) {
+                console.log('Game ended while AI was thinking, skipping move');
+                return;
+            }
 
             // For AI, default to queen promotion
             const result = this.game.movePiece(
@@ -650,6 +706,12 @@ class MetricChessApp {
     }
 
     async fallbackRandomMove() {
+        // Check if game has ended before making the move
+        if (this.gameEnded) {
+            console.log('Game has ended, skipping fallback random move');
+            return;
+        }
+
         // Find all possible moves for the AI
         const allMoves = [];
 
@@ -788,14 +850,25 @@ class MetricChessApp {
                 });
             }
 
+            let showTimeout;
+
             function show() {
-                tooltip.style.display = 'block';
-                update();
-                cleanup = autoUpdate(el, tooltip, update);
+                // Clear any existing timeout
+                clearTimeout(showTimeout);
+                
+                // Set timeout for 1500ms delay before showing tooltip
+                showTimeout = setTimeout(() => {
+                    tooltip.classList.add('show');
+                    update();
+                    cleanup = autoUpdate(el, tooltip, update);
+                }, 1500);
             }
 
             function hide() {
-                tooltip.style.display = 'none';
+                // Clear the show timeout to prevent showing if mouse leaves before delay
+                clearTimeout(showTimeout);
+                
+                tooltip.classList.remove('show');
                 cleanup?.();
             }
 
