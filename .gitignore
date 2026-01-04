@@ -6,6 +6,8 @@ node_modules/
 
 # local config files - Font Awesome Kits for example
 metric-chess.json
+dist/metric-chess.json
 
 # Fairy-Stockfish build directory
 temp_fairy/
+
