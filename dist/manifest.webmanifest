@@ -1,0 +1,1 @@
+{"name":"Metric Chess","short_name":"MetricChess","start_url":".","display":"standalone","background_color":"#2b2b2b","lang":"en","scope":"./","description":"A 10x10 chess variant with unique pieces including trebuchets and heir kings","theme_color":"#f0d9b5","icons":[{"src":"icons/chess-icon.svg","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"}]}

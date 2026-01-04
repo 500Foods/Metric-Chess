@@ -726,12 +726,10 @@ class MetricChessApp {
         const prefixClasses = getFAIconPrefix().split(' ').filter(cls => cls);
         const prefixString = prefixClasses.join(' ');
         
-        console.log('Updating static icons with prefix:', prefixString);
-        
         // Update UI icons based on config overrides
         document.querySelectorAll('i[data-icon]').forEach(icon => {
             const key = icon.dataset.icon;
-            const newIcon = getUIIcon(key);
+            const newIcons = getUIIcon(key);
             
             // Remove all existing Font Awesome style/prefix classes
             icon.classList.remove('fa-solid', 'fa-duotone', 'fa-sharp', 'fa-sharp-duotone', 'fa-regular', 'fa-light', 'fa-thin');
@@ -739,7 +737,7 @@ class MetricChessApp {
             // Add the new style prefix classes
             prefixClasses.forEach(cls => icon.classList.add(cls));
             
-            if (newIcon) {
+            if (newIcons && newIcons.length) {
                 // Remove any existing icon class (starts with fa-)
                 const classes = Array.from(icon.classList);
                 classes.forEach(cls => {
@@ -748,8 +746,10 @@ class MetricChessApp {
                     }
                 });
                 
-                // Add the new icon class
-                icon.classList.add(newIcon);
+                // Add all the new icon classes (supports multiple classes)
+                newIcons.forEach(iconClass => {
+                    icon.classList.add(iconClass);
+                });
             }
         });
     }
@@ -808,4 +808,17 @@ class MetricChessApp {
 // Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     new MetricChessApp();
+    
+    // Register service worker for PWA functionality
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful:', registration.scope);
+                })
+                .catch(error => {
+                    console.log('ServiceWorker registration failed:', error);
+                });
+        });
+    }
 });

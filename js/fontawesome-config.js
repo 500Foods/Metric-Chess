@@ -78,10 +78,20 @@ export async function loadFontAwesomeConfig() {
     if (config.fontAwesomeKit && typeof config.fontAwesomeKit === 'string' && config.fontAwesomeKit.trim()) {
       if (config.icons) {
         if (config.icons.pieces) {
-          FA_CONFIG.icons.pieces = { ...FA_CONFIG.icons.pieces, ...config.icons.pieces };
+          // Normalize icon definitions to handle both string and array formats
+          const normalizedPieces = {};
+          for (const [key, value] of Object.entries(config.icons.pieces)) {
+            normalizedPieces[key] = Array.isArray(value) ? value : [value];
+          }
+          FA_CONFIG.icons.pieces = { ...FA_CONFIG.icons.pieces, ...normalizedPieces };
         }
         if (config.icons.ui) {
-          FA_CONFIG.icons.ui = { ...FA_CONFIG.icons.ui, ...config.icons.ui };
+          // Normalize icon definitions to handle both string and array formats
+          const normalizedUI = {};
+          for (const [key, value] of Object.entries(config.icons.ui)) {
+            normalizedUI[key] = Array.isArray(value) ? value : [value];
+          }
+          FA_CONFIG.icons.ui = { ...FA_CONFIG.icons.ui, ...normalizedUI };
         }
       }
     }
@@ -105,11 +115,13 @@ export function getFAIconPrefix() {
 }
 
 export function getPieceIcon(pieceType) {
-  return FA_CONFIG.icons.pieces[pieceType] || 'fa-question';
+  const icon = FA_CONFIG.icons.pieces[pieceType] || 'fa-question';
+  return Array.isArray(icon) ? icon : [icon];
 }
 
 export function getUIIcon(uiKey) {
-  return FA_CONFIG.icons.ui[uiKey] || 'fa-question';
+  const icon = FA_CONFIG.icons.ui[uiKey] || 'fa-question';
+  return Array.isArray(icon) ? icon : [icon];
 }
 
 // Make available globally for backward compatibility

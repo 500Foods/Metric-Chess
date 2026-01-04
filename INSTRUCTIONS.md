@@ -139,6 +139,31 @@ The [`metric-chess.json`](metric-chess.json) file contains three main sections:
 }
 ```
 
+**NEW**: Multiple class support for advanced Font Awesome features!
+
+Icons can now specify multiple classes to enable advanced Font Awesome features like animations, opacity effects, and more.
+
+**Single Class Format** (original, still supported):
+
+```json
+"resignGame": "fa-flag"
+```
+
+**Multiple Class Format** (new):
+
+```json
+"resignGame": ["fa-flag", "fa-swap-opacity"]
+```
+
+This allows you to combine base icons with modifiers like:
+
+- `fa-swap-opacity` - Swap opacity for duotone icons
+- `fa-beat` - Beat animation
+- `fa-spin` - Spin animation
+- `fa-pulse` - Pulse animation
+- `fa-shake` - Shake animation
+- Any other Font Awesome modifier classes
+
 #### Configuration Options
 
 1. **fontAwesomeKit** (optional): Your Font Awesome Pro kit code
@@ -259,6 +284,21 @@ To test Font Awesome Pro with custom style:
   "icons": {
     "pieces": {
       "trebuchet": "fa-meteor"
+    }
+  }
+}
+```
+
+To test multiple class support with advanced features:
+
+```json
+{
+  "fontAwesomeKit": "your-kit-code",
+  "fontAwesomeStyle": "fa-sharp-duotone fa-solid",
+  "icons": {
+    "ui": {
+      "resignGame": ["fa-flag", "fa-swap-opacity"],
+      "whiteSpinner": ["fa-atom", "fa-spin"]
     }
   }
 }

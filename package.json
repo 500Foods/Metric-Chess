@@ -15,7 +15,8 @@
   },
   "devDependencies": {
     "vite": "^5.0.0",
-    "serve": "^14.2.5"
+    "serve": "^14.2.5",
+    "vite-plugin-pwa": "^0.20.0"
   },
   "keywords": ["chess", "metric", "game", "web"],
   "author": "Metric Chess Team",
