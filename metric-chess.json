@@ -1,0 +1,35 @@
+{
+  "_comment": "Supply a Font Awesome Kit here to enable both new styles and icon overrides. No kit = no new styles and no icon changes.",
+  "fontAwesomeKit": null,
+  "fontAwesomeStyle": "fa-sharp-duotone fa-solid",
+  "icons": {
+    "pieces": {
+      "king": "fa-chess-king",
+      "heir": "fa-chess-king",
+      "queen": "fa-chess-queen",
+      "rook": "fa-chess-rook",
+      "bishop": "fa-chess-bishop",
+      "knight": "fa-chess-knight",
+      "pawn": "fa-chess-pawn",
+      "trebuchet": "fa-meteor"
+    },
+    "ui": {
+      "whiteSpinner": "fa-atom-simple",
+      "blackSpinner": "fa-atom-simple",
+      "newGame": "fa-plus-circle",
+      "resetGame": "fa-refresh",
+      "undoMove": "fa-undo",
+      "redoMove": "fa-redo",
+      "resignGame": "fa-flag",
+      "rotateLeft": "fa-arrow-left",
+      "rotateRight": "fa-arrow-right",
+      "toggleAudio": "fa-volume-up",
+      "chessBoard": "fa-chess-board",
+      "trebuchetFeature": "fa-meteor",
+      "heirFeature": "fa-crown",
+      "aiFeature": "fa-brain",
+      "undoFeature": "fa-undo",
+      "responsiveFeature": "fa-mobile-alt"
+    }
+  }
+}
