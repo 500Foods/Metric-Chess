@@ -1,5 +1,5 @@
 // Service Worker for Metric Chess PWA
-const CACHE_NAME = 'metric-chess-v1';
+const CACHE_NAME = 'metric-chess-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -12,6 +12,8 @@ const ASSETS_TO_CACHE = [
   './js/stockfish/stockfish.js',
   './js/stockfish/stockfish.worker.js',
   './js/stockfish/stockfish.wasm',
+  './js/stockfish/metric-stockfish-worker.js',
+  './js/stockfish/stockfish-worker-wrapper.js',
   './fonts/VanadiumMono-SemiExtended.woff2',
   './fonts/VanadiumSans-SemiExtended.woff2',
   './icons/chess-icon.svg',

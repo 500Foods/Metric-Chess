@@ -1,17 +1,76 @@
 // Fairy-Stockfish (ffish.js) integration for Metric Chess
+// This class uses web workers for NNUE-based search (fairy-stockfish-nnue.wasm)
+// and ffish.js for board manipulation/validation
+
+import StockfishWorker from './stockfish-worker-wrapper.js';
 
 class StockfishEngine {
     constructor() {
         this.ffish = null;
         this.board = null;
         this.isReady = false;
+        this.workerReady = false;
+        this.ffishReady = false;
         this.onReadyCallback = null;
         this.moveCallback = null;
         this.thinking = false;
+        this.worker = null;
+        this.useWorker = true; // Default to using worker for NNUE search
         this.init();
     }
 
     async init() {
+        try {
+            // Initialize both worker (for NNUE search) and ffish.js (for board manipulation)
+            const promises = [];
+
+            // Initialize NNUE worker for strong search
+            if (this.useWorker && window.Worker) {
+                console.log('Initializing Fairy-Stockfish NNUE Worker for search');
+                this.worker = new StockfishWorker();
+                
+                promises.push(new Promise((resolve) => {
+                    this.worker.onReady(() => {
+                        this.workerReady = true;
+                        console.log('Fairy-Stockfish NNUE worker initialized successfully');
+                        resolve();
+                    });
+                    
+                    // Timeout for worker initialization
+                    setTimeout(() => {
+                        if (!this.workerReady) {
+                            console.warn('Worker initialization timeout, will use fallback');
+                            this.useWorker = false;
+                            resolve();
+                        }
+                    }, 10000); // 10 second timeout
+                }));
+            }
+
+            // Also initialize ffish.js for board validation and fallback
+            promises.push(this.initFfish());
+
+            await Promise.all(promises);
+
+            // Ready when at least ffish.js is ready
+            if (this.ffishReady) {
+                this.isReady = true;
+                console.log('StockfishEngine ready:', {
+                    workerReady: this.workerReady,
+                    ffishReady: this.ffishReady,
+                    useWorker: this.useWorker && this.workerReady
+                });
+
+                if (this.onReadyCallback) {
+                    this.onReadyCallback();
+                }
+            }
+        } catch (error) {
+            console.error('Failed to initialize Fairy-Stockfish:', error);
+        }
+    }
+
+    async initFfish() {
         try {
             // Wait for ffish Module to be loaded and initialized
             let attempts = 0;
@@ -21,56 +80,51 @@ class StockfishEngine {
             }
 
             if (!window.Module || !window.Module.Board) {
-                throw new Error('ffish Module not loaded or not ready');
+                console.warn('ffish Module not loaded, fallback search will be limited');
+                return;
             }
 
             // Use the global Module object
             this.ffish = window.Module;
 
-            console.log('Fairy-Stockfish info:', this.ffish.info());
-            console.log('Available variants:', this.ffish.variants());
+            console.log('ffish.js info:', this.ffish.info());
 
             // Load the Metric Chess variant configuration
             this.loadMetricChessVariant();
 
-            // Enable multithreading for better performance
-            try {
-                this.ffish.setOptionInt("Threads", navigator.hardwareConcurrency || 4);
-                console.log(`Multithreading enabled with ${navigator.hardwareConcurrency || 4} threads`);
-            } catch (error) {
-                console.log('Multithreading not available:', error.message);
-            }
-
-            this.isReady = true;
-            console.log('Fairy-Stockfish initialized successfully with Metric Chess variant');
-
-            if (this.onReadyCallback) {
-                this.onReadyCallback();
-            }
+            this.ffishReady = true;
+            console.log('ffish.js initialized for board manipulation');
         } catch (error) {
-            console.error('Failed to initialize Fairy-Stockfish:', error);
+            console.error('Failed to initialize ffish.js:', error);
         }
     }
 
     loadMetricChessVariant() {
-        // Define the Metric Chess variant configuration for Fairy-Stockfish
+        // Define the Metric Chess variant configuration for ffish.js
+        // This must match the variant definition in the worker for consistency
+        // Trebuchet moves exactly Chebyshev distance 3 (max(|dx|,|dy|) = 3)
         const metricChessConfig = `
 # Metric Chess - 10x10 variant with trebuchets
+# Trebuchet: jumps exactly Chebyshev distance 3
+
 [metricchess:chess]
 maxRank = 10
 maxFile = 10
-startFen = trnbqkbnrt/pppppppppp/10/10/10/10/10/10/PPPPPPPPPP/TRNBQKBNRT w - - 0 1
+startFen = trnbqkbnrt/pppppppppp/10/10/10/10/10/10/PPPPPPPPPP/TRNBQKBNRT w KQkq - 0 1
+pieceToCharTable = PNBRQ..............Kpnbrq..............k.......T.......t
+pocketSize = 0
 promotionRank = 10
-promotionPieceTypes = q r b n t k
+promotionPieceTypes = qrbnkt
 doubleStep = true
 doubleStepRank = 2
 doubleStepRankMin = 2
 castling = true
-castlingKingSide = true
-castlingQueenSide = true
-# Trebuchet piece that moves exactly distance 3 (Chebyshev distance)
-customPiece1 = t:mQ3
-pieceToCharTable = PNBRQ..........Kpnbrq..........k......T.......t
+castlingKingsideFile = h
+castlingQueensideFile = c
+# Trebuchet: leaper that moves exactly distance 3 (Chebyshev metric)
+# All squares where max(|dx|, |dy|) = 3
+# Coordinates: (3,0), (0,3), (3,1), (1,3), (3,2), (2,3), (3,3) and their reflections
+customPiece1 = t:m(3,0)m(0,3)m(3,1)m(1,3)m(3,2)m(2,3)m(3,3)
 `;
 
         try {
@@ -89,7 +143,8 @@ pieceToCharTable = PNBRQ..........Kpnbrq..........k......T.......t
     }
 
     setPosition(fen) {
-        if (this.isReady) {
+        // Always set up ffish.js board for validation and fallback search
+        if (this.ffishReady && this.ffish) {
             try {
                 // Create a new board with the Metric Chess variant
                 if (this.board) {
@@ -98,8 +153,13 @@ pieceToCharTable = PNBRQ..........Kpnbrq..........k......T.......t
                 this.board = new this.ffish.Board('metricchess', fen || undefined);
                 console.log('Position set:', this.board.fen());
             } catch (error) {
-                console.error('Error setting position:', error);
+                console.error('Error setting ffish.js position:', error);
             }
+        }
+
+        // Also send position to worker for NNUE search
+        if (this.useWorker && this.workerReady && this.worker) {
+            this.worker.setPosition(fen);
         }
     }
 
@@ -139,48 +199,90 @@ pieceToCharTable = PNBRQ..........Kpnbrq..........k......T.......t
         return '*';
     }
 
-    // Time-based AI move selection using Fairy-Stockfish's built-in search
+    // Time-based AI move selection using Fairy-Stockfish NNUE engine
     async go(timeLimitMs = 3000, callback) {
-        if (!this.isReady || !this.board || this.thinking) {
-            console.log('Cannot make AI move:', { isReady: this.isReady, hasBoard: !!this.board, thinking: this.thinking });
+        if (this.thinking) {
+            console.log('Cannot make AI move: already thinking');
             return;
         }
 
         this.thinking = true;
         this.moveCallback = callback;
 
-        // Try to use Fairy-Stockfish's built-in search first
-        try {
-            // Check if the board has a go method (UCI-style search)
-            if (typeof this.board.go === 'function') {
-                console.log('Using Fairy-Stockfish built-in search');
+        console.log('AI go() called:', {
+            useWorker: this.useWorker,
+            workerReady: this.workerReady,
+            ffishReady: this.ffishReady,
+            hasBoard: !!this.board,
+            timeLimit: timeLimitMs
+        });
 
-                // Set up search parameters
-                const searchOptions = {
-                    movetime: timeLimitMs,
-                    threads: navigator.hardwareConcurrency || 4, // Use available CPU cores
-                    depth: 20 // Allow deep search within time limit
-                };
-
-                // Start the search
-                this.board.go(searchOptions, (result) => {
-                    this.thinking = false;
-                    console.log('Fairy-Stockfish search result:', result);
-
-                    if (result && result.bestmove) {
-                        this.moveCallback(result.bestmove);
+        // Try worker-based NNUE search first (strongest option)
+        if (this.useWorker && this.workerReady && this.worker) {
+            console.log('Using worker-based Fairy-Stockfish NNUE search');
+            
+            // Set a timeout for the worker in case it hangs
+            const workerTimeout = setTimeout(() => {
+                console.warn('Worker search timeout, falling back to minimax');
+                this.thinking = false;
+                this.fallbackSearch(timeLimitMs, callback);
+            }, timeLimitMs + 5000); // Give 5 extra seconds for worker overhead
+            
+            this.worker.go(timeLimitMs, (move) => {
+                clearTimeout(workerTimeout);
+                this.thinking = false;
+                
+                console.log('Worker returned move:', move);
+                
+                if (move && !isNaN(move.fromFile) && !isNaN(move.toFile)) {
+                    // Validate the move using ffish.js if available
+                    if (this.board) {
+                        const uciMove = this.moveToUCI(move);
+                        const legalMoves = this.getLegalMoves();
+                        if (legalMoves.includes(uciMove)) {
+                            console.log('Worker move validated:', uciMove);
+                            callback(move);
+                        } else {
+                            console.warn('Worker move not in legal moves:', uciMove, 'Legal:', legalMoves);
+                            // Try to find a similar valid move or fall back
+                            this.fallbackSearch(timeLimitMs, callback);
+                        }
                     } else {
-                        console.warn('No bestmove from Fairy-Stockfish, falling back to custom search');
-                        this.fallbackSearch(timeLimitMs, callback);
+                        // No validation available, trust the worker
+                        callback(move);
                     }
-                });
-            } else {
-                throw new Error('Built-in search not available');
-            }
-        } catch (error) {
-            console.log('Built-in search failed, using custom iterative deepening:', error.message);
+                } else {
+                    console.warn('Invalid move from worker, falling back to minimax');
+                    this.fallbackSearch(timeLimitMs, callback);
+                }
+            });
+        } else if (this.ffishReady && this.board) {
+            // Fallback to custom minimax search using ffish.js board
+            console.log('Using minimax search with ffish.js board');
             this.fallbackSearch(timeLimitMs, callback);
+        } else {
+            console.error('Cannot make AI move: no search method available', {
+                useWorker: this.useWorker,
+                workerReady: this.workerReady,
+                ffishReady: this.ffishReady,
+                hasBoard: !!this.board
+            });
+            this.thinking = false;
         }
+    }
+
+    // Convert move object to UCI string (e.g., "e2e4" or "a10b8")
+    moveToUCI(move) {
+        const files = 'abcdefghij';
+        const fromFile = files[move.fromFile];
+        const toFile = files[move.toFile];
+        const fromRank = move.fromRank + 1;
+        const toRank = move.toRank + 1;
+        let uci = `${fromFile}${fromRank}${toFile}${toRank}`;
+        if (move.promotion) {
+            uci += move.promotion;
+        }
+        return uci;
     }
 
     // Fallback to custom iterative deepening search
@@ -512,11 +614,16 @@ pieceToCharTable = PNBRQ..........Kpnbrq..........k......T.......t
     }
 
     stop() {
+        if (this.useWorker && this.worker) {
+            this.worker.stop();
+        }
         this.thinking = false;
     }
 
     quit() {
-        if (this.board) {
+        if (this.useWorker && this.worker) {
+            this.worker.quit();
+        } else if (this.board) {
             this.board.delete();
             this.board = null;
         }

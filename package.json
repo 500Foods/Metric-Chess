@@ -10,15 +10,20 @@
     "serve": "serve dist"
   },
   "dependencies": {
-    "font-awesome": "^4.7.0",
-    "fairy-stockfish-nnue.wasm": "^1.0.0"
+    "fairy-stockfish-nnue.wasm": "^1.1.11",
+    "font-awesome": "^4.7.0"
   },
   "devDependencies": {
-    "vite": "^5.0.0",
     "serve": "^14.2.5",
+    "vite": "^5.0.0",
     "vite-plugin-pwa": "^0.20.0"
   },
-  "keywords": ["chess", "metric", "game", "web"],
+  "keywords": [
+    "chess",
+    "metric",
+    "game",
+    "web"
+  ],
   "author": "Metric Chess Team",
   "license": "MIT"
 }

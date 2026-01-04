@@ -577,26 +577,35 @@ export class ChessGame {
         console.log('Setting FEN for AI:', fen);
         this.aiEngine.setPosition(fen);
         this.aiEngine.go(this.aiTimeLimit, (move) => {
-            console.log('Raw UCI move from ffish:', move);
-            
-            // Parse UCI move format (e.g., "a2b3" for file a rank 2 to file b rank 3)
-            // Files: a-j = 0-9
-            // Ranks: 1-10 = 0-9
-            // UCI format can be "a2b3" or "a10b10" so we need to be careful
-            const match = move.match(/^([a-j])(\d+)([a-j])(\d+)/);
-            if (!match) {
-                console.error('Invalid UCI move format:', move);
-                callback({ fromFile: NaN, fromRank: NaN, toFile: NaN, toRank: NaN });
-                return;
-            }
-            
-            const fromFile = match[1].charCodeAt(0) - 'a'.charCodeAt(0);  // a=0, b=1, ..., j=9
-            const fromRank = parseInt(match[2]) - 1;  // 1=0, 2=1, ..., 10=9
-            const toFile = match[3].charCodeAt(0) - 'a'.charCodeAt(0);
-            const toRank = parseInt(match[4]) - 1;
+            console.log('Raw move from AI engine:', move);
 
-            console.log('Parsed move:', { fromFile, fromRank, toFile, toRank });
-            callback({ fromFile, fromRank, toFile, toRank });
+            // Check if move is already parsed (object) or needs parsing (string)
+            if (typeof move === 'object' && move.fromFile !== undefined) {
+                // Already parsed by the wrapper
+                console.log('Move already parsed:', move);
+                callback(move);
+            } else if (typeof move === 'string') {
+                // Parse UCI move format (e.g., "a2b3" for file a rank 2 to file b rank 3)
+                // Files: a-j = 0-9
+                // Ranks: 1-10 = 0-9
+                const match = move.match(/^([a-j])(\d+)([a-j])(\d+)/);
+                if (!match) {
+                    console.error('Invalid UCI move format:', move);
+                    callback({ fromFile: NaN, fromRank: NaN, toFile: NaN, toRank: NaN });
+                    return;
+                }
+
+                const fromFile = match[1].charCodeAt(0) - 'a'.charCodeAt(0);  // a=0, b=1, ..., j=9
+                const fromRank = parseInt(match[2]) - 1;  // 1=0, 2=1, ..., 10=9
+                const toFile = match[3].charCodeAt(0) - 'a'.charCodeAt(0);
+                const toRank = parseInt(match[4]) - 1;
+
+                console.log('Parsed move:', { fromFile, fromRank, toFile, toRank });
+                callback({ fromFile, fromRank, toFile, toRank });
+            } else {
+                console.error('Unexpected move format:', move);
+                callback({ fromFile: NaN, fromRank: NaN, toFile: NaN, toRank: NaN });
+            }
         });
     }
 

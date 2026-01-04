@@ -112,15 +112,30 @@ export default defineConfig({
             if (!fs.existsSync(stockfishDir)) {
               fs.mkdirSync(stockfishDir, { recursive: true });
             }
-            
-            // Copy all stockfish files
-            const files = ['ffish.js', 'ffish.wasm', 'stockfish.js', 'stockfish.wasm', 'stockfish.worker.js'];
+
+            // Copy all stockfish files including the custom worker
+            const files = ['ffish.js', 'ffish.wasm', 'stockfish.js', 'stockfish.wasm', 'stockfish.worker.js', 'metric-stockfish-worker.js'];
             files.forEach(file => {
               const sourcePath = resolve(__dirname, 'js', 'stockfish', file);
               const destPath = resolve(__dirname, 'dist', 'js', 'stockfish', file);
               if (fs.existsSync(sourcePath)) {
                 copyFileSync(sourcePath, destPath);
                 console.log(`Copied ${file} to dist directory`);
+              }
+            });
+
+            // Copy fairy-stockfish files from public directory
+            const fairyFiles = ['stockfish.js', 'stockfish.wasm', 'stockfish.worker.js', 'uci.js'];
+            fairyFiles.forEach(file => {
+              const sourcePath = resolve(__dirname, 'public', 'stockfish', file);
+              const destPath = resolve(__dirname, 'dist', 'stockfish', file);
+              const destDir = path.dirname(destPath);
+              if (!fs.existsSync(destDir)) {
+                fs.mkdirSync(destDir, { recursive: true });
+              }
+              if (fs.existsSync(sourcePath)) {
+                copyFileSync(sourcePath, destPath);
+                console.log(`Copied fairy-stockfish ${file} to dist directory`);
               }
             });
           }
