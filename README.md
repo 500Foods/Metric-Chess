@@ -2,18 +2,21 @@
 
 Welcome to **Metric Chess**—the coolest, biggest upgrade to chess ever! Imagine you're a super king leading a huge army of soldiers, catapults, and sneaky princes on a giant numbered playground. You and a friend take turns moving your pieces to trap the enemy's last king so bad he can't escape—that's a win! White always goes first to keep it fair. If things get stuck or nobody can win, it's a tie called a draw. Don't worry if you've never played anything like chess—I'll explain **every single thing** super easy, like we're playing right now with snacks. Lots of pictures in words, fun examples, and tips to beat your friends. Let's get started!
 
-### What Is Metric Chess All About?
+## What Is Metric Chess All About?
+
 It's for two players: one with white pieces (you at the bottom), one with black (at the top). You swap turns moving **one piece** each time on a huge square playground. The big goal? Sneakily attack and capture your enemy's **last king** (they might have extra "heir kings" from promoted pawns—more on that awesome twist later). Put their last king in danger where he can't run, grab the attacker, or block? **Checkmate—you're the champion!**
 
 Games end if someone says "I quit!" (resign), you both agree "Tie!", or special rules kick in (like no fights for 10 turns). No timers—we're chilling for fun. Touch pieces all you want, no rules broken. Games can last longer 'cause the board's bigger, but that's more epic battles!
 
-### The Playground: The Board
+## The Playground: The Board
+
 Think of a giant checkerboard: **10 squares wide by 10 tall = 100 squares total**! Super metric (all 10s). Columns are **files numbered 0 to 9** (0 on left/queenside from white's view, 9 on right/kingside). Rows are **ranks 1 to 10** (1 at white's bottom, 10 at black's top). Name spots like **45** (file 4, rank 5).  
 Put the board so white's at bottom. Squares alternate light/dark (fun to see moves). Set it with your **queen on her color** (white queen on light square at 41—make file0 rank1 dark if needed).
 
 White chills on ranks 1-2, black on 9-10. No magic zones except promo lines.
 
-### Your Army: Meet the Gang!
+## Your Army: Meet the Gang
+
 You each start with **20 pieces** (10 big ones on back row + 10 pawns upfront). Each has cool powers! Capturing = jump on enemy square, kick 'em off forever. Can't grab your own team. Most go any direction; pawns only forward.
 
 - **King (k/K)**: Your VIP boss with a cross hat! Moves **just 1 square** any way: up, down, left, right, or corner-diagonal. Can't go where danger waits (attacked square).
@@ -37,7 +40,8 @@ You each start with **20 pieces** (10 big ones on back row + 10 pawns upfront). 
 - **Pawns (p/P)**: **10 little soldiers** upfront! Forward only (white up to rank 10, black down to 1). **Always 1 or 2 squares** if empty ahead—no jumping back. Capture **1 diagonal forward**.
   Example: White p at 24 goes p35 or p46 (clear). Enemy at 35? Capture there! Straight block? Stuck.
 
-### Setting Up the Game
+## Setting Up the Game
+
 Board ready? White bottom.  
 **White Rank 1 (back row)**: t0 r1 n2 b3 **q4 k5** b6 n7 r8 t9.  
 **Rank 2**: p0 p1 p2 p3 p4 p5 p6 p7 p8 p9.  
@@ -45,12 +49,14 @@ Board ready? White bottom.
 **Rank 9**: P0 to P9.  
 Queens stare on file 4, kings file 5. Perfect!
 
-### How to Play: Moving and Grabbing Enemies
+## How to Play: Moving and Grabbing Enemies
+
 Your turn: Pick **one piece**, slide/jump to legal spot. Capture optional (land on enemy). No through friends (jumpers ok). Off board? Nope!  
 **Danger Zone (Check!)**: If your move attacks their **last king**, yell "Check!" They fix it: Move that king safe, grab your attacker, or block (sliders only).  
 Example: Your q at 45 eyes black's last K at 50 (clear file 5)—"Check!" Black: K to 51, or pawn blocks 47.
 
-### Special Moves: Cool Tricks!
+## Special Moves: Cool Tricks
+
 - **Rook Castling**: King hides safe with rook buddy (once per side).  
   **Kingside (right)**: k51 → 71, r81 → 61 (61/71 empty, no danger).  
   **Queenside (left)**: k51 → 21, r11 → 31 (21/31/41 empty).  
@@ -70,7 +76,8 @@ Example: Your q at 45 eyes black's last K at 50 (clear file 5)—"Check!" Black:
   Heirs can't castle (already "moved" via promo).  
   Theme: Pawn was secret heir—fights for dad! If heir stuck? Move something else (no stalemate).
 
-### How Games End: Win Big or Tie!
+## How Games End: Win Big or Tie
+
 - **Checkmate**: Their last king checked, no fix—you win!  
   Example: Last K09 trapped by your r05 (file0 attack), no escape—victory dance!
 - **Stalemate**: Your turn, no moves, **their last king safe** = tie. (Heir stuck? Other moves ok.)
@@ -79,13 +86,16 @@ Example: Your q at 45 eyes black's last K at 50 (clear file 5)—"Check!" Black:
 - **No Mate Possible**: Just kings = tie.
 - Resign ("I lose!") or agree tie.
 
-### Tips for Super Fun
+## Tips for Super Fun
+
 Push pawns to free friends, get ts/knights out quick, watch your last king. Mistakes? Giggle and learn! Bigger board = more room to zoom.
 
-### Strategy Guide: Be a Metric Master!
+## Strategy Guide: Be a Metric Master
+
 Tricks to crush! Start solo pieces, then team-ups. 10x10 = wing raids + center wars.
 
-**Piece-by-Piece Tips**
+### Piece-by-Piece Tips
+
 - **k**: Castle early (T-castle flank forts!). Late: Sneak center 45 to guard heirs.
 - **q**: Center 44-55 rules everything—protect her!
 - **r**: Claim open files (1/8 starts)—double on rank9 gobble pawns.
@@ -94,7 +104,8 @@ Tricks to crush! Start solo pieces, then team-ups. 10x10 = wing raids + center w
 - **t**: **Early leaps**! 24-ring central = fork monster. Wings snipe, pair for bomb rings. Can't fight close—pawn shield!
 - **p**: Center files 2-6 push 2 squares—race heirs! Passed p (alone file) = promo gold.
 
-**Team-Up Powers (Superhero Combos!)**
+### Team-Up Powers (Superhero Combos!)
+
 - **Forks**: One piece hits 2+! t/n kings—t44 eyes 24!
   Setup: Jump central. Ex: t44 forks Q67 + R53.
 - **Pins**: Trap foe—can't move or VIP exposed behind. q/r/b best.
@@ -110,7 +121,8 @@ Tricks to crush! Start solo pieces, then team-ups. 10x10 = wing raids + center w
 
 **Metric Bonus**: 0-9 wings for t raids; center 3-6 files battleground. Heirs distract!
 
-### Defensive Strategies: Spot Danger & Block It!
+### Defensive Strategies: Spot Danger & Block It
+
 Half the game—be a shield boss! Checklist spots setups; here's how to smash.
 
 - **Vs Forks**: Warning: Enemy t/n jumping center (44?). Eyes 2 yours? Save VIP (q first), capture unprotected forker, move to attack it.
@@ -122,8 +134,10 @@ Half the game—be a shield boss! Checklist spots setups; here's how to smash.
 - **Vs Heirs/t**: Pawn chains cover rings/heir adjacents. Stall 10-move if low pieces (fewer wins!).
 - **General**: Castle ASAP, thick p-center (34-45), guard loners, spot on their turn—"Watch that t!"
 
-### Your Move Checklist: Win Every Time! (10 Seconds)
+## Your Move Checklist: Win Every Time
+
 Before moving:
+
 1. Puts **my last k** in check? Nope!
 2. Checks **their last k**? "Check!" (Mate?)
 3. Leaves **my pieces hanging** (free grab)?
@@ -134,17 +148,18 @@ Before moving:
 
 Pass? Boom—move!
 
-### Metric Notation: Number Magic!
+## Metric Notation: Number Magic
+
 Write moves like codes—super short!
+
+- Light pieces use lowercase, Dark pieces use uppercase
 - Pawn: **P45** (to 45) or **P24** (from rank2 file4).
 - Piece: **T45**, **n36**.
-- Capture: **TxT** (t takes T). Ambiguous? **T05xT36**.
+- Capture: **txT** (t takes T). Ambiguous? **t05xT36**.
 - Check: **+** (**q45+**). Mate: **#**.
 - Castling: **O-O** (r kingside), **O-O-O** (r queenside), **O-O-O-O** (t kingside), **O-O-O-O-O** (t queenside).
-Example: 1. P24 P76 2. T03 T83...
 
 That's **all of Metric Chess**—heirs, mega-ts, 10s everywhere! Set up, play a game, use checklist. You'll rule!
-
 
 ## Additional Notes
 
@@ -182,4 +197,3 @@ SUM:                            24            661            360           5288
 ## Sponsor / Donate / Support
 
 If you find this work interesting, helpful, or valuable, or that it has saved you time, money, or both, please consider directly supporting these efforts financially via [GitHub Sponsors](https://github.com/sponsors/500Foods) or donating via [Buy Me a Pizza](https://www.buymeacoffee.com/andrewsimard500). Also, check out these other [GitHub Repositories](https://github.com/500Foods?tab=repositories&q=&sort=stargazers) that may interest you.
-
