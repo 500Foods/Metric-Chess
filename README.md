@@ -171,28 +171,28 @@ While this project is currently under active development, feel free to give it a
 
 <!--CLOC-START -->
 ```cloc
-Last updated at 2026-01-04 10:52:41 UTC
+Last updated at 2026-01-04 13:37:01 UTC
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-JSON                             5              0              0           7070
-JavaScript                      15            470            379           2340
+JSON                             6              0              0           7095
+JavaScript                      19            616            487           3179
+Markdown                        11            739             11           2052
 CSS                              2             98             16            612
-Markdown                         3            201              2            548
 HTML                             2              8             14            398
 YAML                             2              8             13             37
 SVG                              1              0              0             31
 -------------------------------------------------------------------------------
-SUM:                            30            785            424          11036
+SUM:                            43           1469            541          13404
 -------------------------------------------------------------------------------
-15 Files were skipped (duplicate, binary, or without source code):
-  wasm: 5
-  js: 3
+23 Files were skipped (duplicate, binary, or without source code):
+  js: 8
+  wasm: 7
+  json: 2
   woff2: 2
   broken: 1
   gitattributes: 1
   gitignore: 1
-  json: 1
   svg: 1
 ```
 <!--CLOC-END-->
