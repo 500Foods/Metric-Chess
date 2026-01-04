@@ -32,14 +32,21 @@ npm run dev
 
 # Build for production
 npm run build:prod
+
+# Run production preview
+npm run preview
 ```
 
 ## 📚 Documentation
 
 ### System Components
 
+- **[ARCHITECTURE.md](ARCHITECTURE.md)**: Overall system architecture and design decisions
+- **[BUILD.md](BUILD.md)**: Build system, Vite configuration, and Fairy-Stockfish compilation
+- **[VARIANTS.md](VARIANTS.md)**: Metric Chess variant rules, piece movements, and engine integration
+- **[PERFORMANCE.md](PERFORMANCE.md)**: Performance analysis and benchmarks
 - **[WORKERS.md](WORKERS.md)**: Web worker architecture and message passing
-- **[THREADING.md](THREADING.md)**: Multi-threading, WASM, and Emscripten pthreads
+- **[THREADING.md](THREADING.md)**: Multi-threading, WASM, and Emscripten pthreads (advanced debugging included)
 - **[UI.md](UI.md)**: User interface architecture and components
 - **[FONTAWESOME.md](FONTAWESOME.md)**: Icon configuration and customization
 - **[PWA.md](PWA.md)**: Progressive Web App features and service worker
@@ -62,8 +69,6 @@ npm run build:prod
 
 - **Game Features**: Castling rules, save/load functionality
 - **UI Enhancements**: Piece animations, sound effects, themes
-- **AI Improvements**: Difficulty levels, AI vs AI mode
-- **Performance**: Rendering optimizations, memory management
 
 ## 🔧 Technical Stack
 
@@ -93,7 +98,6 @@ npm run build:prod
 - **Modular Architecture**: Separate concerns across files
 - **Progressive Enhancement**: Graceful degradation for older browsers
 - **Performance First**: Optimized rendering and memory usage
-- **Accessibility**: Keyboard navigation, screen reader support
 
 ### User Experience
 
