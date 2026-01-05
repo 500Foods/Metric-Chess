@@ -72,6 +72,91 @@ Three modal types handle different user interactions:
 - **Options**: Queen, Rook, Bishop, Knight, Trebuchet, Heir King
 - **Logic**: Hides Heir King option when adjacent to enemy king
 
+#### Customization Modal
+
+- **Purpose**: Allow users to customize the board layout by placing, moving, or removing pieces
+- **Activation**: Triggered by clicking the "Customize board" button (screwdriver-wrench icon)
+- **Key Features**:
+  - **Piece Placement**: Add any piece (pawn, knight, bishop, rook, trebuchet, queen, king) to any square
+  - **Piece Movement**: Move pieces between squares using drag-and-drop interaction
+  - **Square Clearing**: Remove pieces from individual squares
+  - **Bulk Operations**: Clear entire ranks, files, or the entire board
+  - **Board Operations**: Mirror board layout, reset to default setup
+  - **Undo/Redo**: Full history tracking with undo functionality
+  - **Color Selection**: Choose between light (white) and dark (black) pieces
+
+- **UI Components**:
+  - **Function Buttons**: Undo, Clear Square, Clear Rank, Clear File, Clear Board, Mirror Board, Reset Board
+  - **Piece Palette**: Two rows of piece buttons (light pieces on top, dark pieces on bottom)
+  - **Visual Feedback**: Highlighted target square during customization
+
+- **Implementation Details**:
+  - **State Management**: Uses `customizationMode` flag and `customizationTarget` object
+  - **History Tracking**: Maintains `customizationHistory` array for undo functionality
+  - **Event Handling**: Special click handling when in customization mode
+  - **Modal Interaction**: Modal appears when a target square is selected
+
+- **Code Structure**:
+
+  ```javascript
+  // Main customization methods in MetricChessApp class
+  toggleCustomizationMode() { /* Toggle mode and update UI */ }
+  handleCustomizationClick(file, rank) { /* Handle piece placement/movement */ }
+  placeCustomPiece(boardFile, boardRank, piece) { /* Place piece on board */ }
+  clearRank(rank) { /* Clear all pieces in a rank */ }
+  clearFile(file) { /* Clear all pieces in a file */ }
+  clearBoard() { /* Clear entire board */ }
+  mirrorBoard() { /* Mirror board layout horizontally */ }
+  resetBoard() { /* Reset to default starting position */ }
+  undoCustomization() { /* Revert to previous board state */ }
+  ```
+
+- **HTML Structure**:
+
+  ```html
+  <div class="modal" id="customizationModal">
+      <div class="modal-content customization-content">
+          <div class="customization-options">
+              <!-- Function buttons -->
+              <div class="function-buttons">
+                  <button id="undoCustom"><i class="fa-solid fa-rotate-left"></i></button>
+                  <button id="clearSquare"><i class="fa-solid fa-trash"></i></button>
+                  <!-- More function buttons... -->
+              </div>
+              
+              <!-- Light pieces -->
+              <div class="piece-row light-pieces">
+                  <button class="piece-btn" data-piece="pawn" data-color="white">
+                      <i class="fa-sharp-duotone fa-solid fa-chess-pawn chess-piece white"></i>
+                  </button>
+                  <!-- More light pieces... -->
+              </div>
+              
+              <!-- Dark pieces -->
+              <div class="piece-row dark-pieces">
+                  <button class="piece-btn" data-piece="pawn" data-color="black">
+                      <i class="fa-sharp-duotone fa-solid fa-chess-pawn chess-piece black"></i>
+                  </button>
+                  <!-- More dark pieces... -->
+              </div>
+          </div>
+      </div>
+  </div>
+  ```
+
+- **Usage Workflow**:
+  1. User clicks "Customize board" button to enter customization mode
+  2. User clicks on target square to select it (highlighted in orange)
+  3. Customization modal appears with piece selection options
+  4. User selects a piece to place or uses function buttons for operations
+  5. Changes are immediately reflected on the board
+  6. User can undo changes or exit customization mode when done
+
+- **Visual Indicators**:
+  - Customization mode active: Button turns orange (`customization-active` class)
+  - Target square: Highlighted with semi-transparent orange overlay
+  - Piece buttons: Show actual chess piece icons with color coding
+
 ## Rendering System (`js/render.js`)
 
 ### ChessRenderer Class

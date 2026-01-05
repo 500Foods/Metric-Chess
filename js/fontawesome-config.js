@@ -31,7 +31,9 @@ let FA_CONFIG = {
       heirFeature: 'fa-crown',
       aiFeature: 'fa-brain',
       undoFeature: 'fa-undo',
-      responsiveFeature: 'fa-mobile-alt'
+      responsiveFeature: 'fa-mobile-alt',
+      customBoard: 'fa-screwdriver-wrench',
+      themePalette: 'fa-palette'
     }
   }
 };
@@ -120,7 +122,7 @@ export function getPieceIcon(pieceType) {
 }
 
 export function getUIIcon(uiKey) {
-  const icon = FA_CONFIG.icons.ui[uiKey] || 'fa-question';
+  const icon = FA_CONFIG.icons.ui[uiKey] || FA_CONFIG.icons.pieces[uiKey] || 'fa-question';
   return Array.isArray(icon) ? icon : [icon];
 }
 

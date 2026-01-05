@@ -16,8 +16,8 @@
     <!-- Floating UI for fancy tooltips -->
     <script src="https://unpkg.com/@floating-ui/core@1"></script>
     <script src="https://unpkg.com/@floating-ui/dom@1"></script>
-  <script type="module" crossorigin src="./assets/js/main-BXlQqNuX.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/css/main-rNtXQtzX.css">
+  <script type="module" crossorigin src="./assets/js/main-CQ6kbinn.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/css/main-GssVThCl.css">
 <link rel="manifest" href="./manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="./registerSW.js"></script></head>
 <body>
     <div class="app-container">
@@ -82,8 +82,9 @@
             <button id="redoMove" title="Redo move"><i class="fa-solid fa-redo" data-icon="redoMove"></i></button>
             <div class="game-status" id="gameStatus" title="Current game status">White's turn</div>
             <button id="resignGame" title="Resign the game"><i class="fa-solid fa-flag" data-icon="resignGame"></i></button>
+            <button id="themePalette" title="Change theme"><i class="fa-solid fa-palette" data-icon="themePalette"></i></button>
+            <button id="customBoard" title="Customize board"><i class="fa-solid fa-screwdriver-wrench" data-icon="customBoard"></i></button>
             <button id="rotateLeft" class="orientation-button" title="Rotate board left"><i class="fa-solid fa-arrow-left" data-icon="rotateLeft"></i></button>
-            <button id="rotateRight" class="orientation-button" title="Rotate board right"><i class="fa-solid fa-arrow-right" data-icon="rotateRight"></i></button>
             <button id="toggleAudio" title="Toggle sound effects"><i class="fa-solid fa-volume-up" data-icon="toggleAudio"></i></button>
             <div class="ai-spinner black-thinking" id="blackSpinner" title="Black AI thinking">
                 <i class="fa-solid fa-atom" data-icon="blackSpinner"></i>
@@ -183,6 +184,15 @@
                 </select>
                 <p class="difficulty-hint">Longer thinking for stronger AI</p>
             </div>
+            <div class="setup-option">
+                <label for="themeSelector">Theme</label>
+                <select id="themeSelector">
+                    <option value="default" selected>Default</option>
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                </select>
+                <p class="theme-hint">Visual appearance of the game</p>
+            </div>
             <div class="modal-buttons">
                 <button id="startGame">Start Game</button>
                 <button id="cancelGame">Cancel</button>
@@ -204,6 +214,55 @@
             </div>
         </div>
     </div>
+
+    <!-- Customization Modal -->
+    <div class="modal" id="customizationModal">
+        <div class="modal-content customization-content">
+            <div class="customization-options">
+                <!-- Function buttons row -->
+                <div class="function-buttons">
+                    <button id="undoCustom" class="customization-btn" title="Undo Customization"><i class="fa-solid fa-rotate-left" data-icon="undoCustom"></i></button>
+                    <button id="clearSquare" class="customization-btn" title="Clear Square"><i class="fa-solid fa-trash" data-icon="clearSquare"></i></button>
+                    <button id="clearRank" class="customization-btn" title="Clear Rank"><i class="fa-solid fa-xmarks-lines" data-icon="clearRank"></i></button>
+                    <button id="clearFile" class="customization-btn" title="Clear File"><i class="fa-solid fa-xmarks-lines fa-rotate-90" data-icon="clearFile"></i></button>
+                    <button id="clearBoard" class="customization-btn" title="Clear Board"><i class="fa-solid fa-dumpster" data-icon="clearBoard"></i></button>
+                    <button id="mirrorBoard" class="customization-btn" title="Mirror Board"><i class="fa-solid fa-star-half-stroke" data-icon="mirrorBoard"></i></button>
+                    <button id="resetBoard" class="customization-btn" title="Reset Board"><i class="fa-solid fa-star" data-icon="resetBoard"></i></button>
+                </div>
+
+                <!-- Clear buttons row -->
+                <div class="clear-buttons">
+                    <button class="clear-btn" title="Clear Piece"><i class="fa-solid fa-square"></i></button>
+                    <button class="clear-btn" title="Clear Entire Rank"><i class="fa-solid fa-minus"></i> Rank</button>
+                    <button class="clear-btn" title="Clear Entire File"><i class="fa-solid fa-minus fa-rotate-90"></i> File</button>
+                    <button class="clear-btn" title="Clear Entire Board"><i class="fa-solid fa-trash"></i> All</button>
+                </div>
+
+                <!-- Light pieces row -->
+                <div class="piece-row light-pieces">
+                    <button class="piece-btn" data-piece="pawn" data-color="white" title="Light Pawn"><i class="fa-solid fa-chess-pawn chess-piece white" data-icon="pawn"></i></button>
+                    <button class="piece-btn" data-piece="knight" data-color="white" title="Light Knight"><i class="fa-solid fa-chess-knight chess-piece white" data-icon="knight"></i></button>
+                    <button class="piece-btn" data-piece="bishop" data-color="white" title="Light Bishop"><i class="fa-solid fa-chess-bishop chess-piece white" data-icon="bishop"></i></button>
+                    <button class="piece-btn" data-piece="rook" data-color="white" title="Light Rook"><i class="fa-solid fa-chess-rook chess-piece white" data-icon="rook"></i></button>
+                    <button class="piece-btn" data-piece="trebuchet" data-color="white" title="Light Trebuchet"><i class="fa-solid fa-meteor chess-piece white" data-icon="trebuchet"></i></button>
+                    <button class="piece-btn" data-piece="queen" data-color="white" title="Light Queen"><i class="fa-solid fa-chess-queen chess-piece white" data-icon="queen"></i></button>
+                    <button class="piece-btn" data-piece="king" data-color="white" title="Light King"><i class="fa-solid fa-chess-king chess-piece white" data-icon="king"></i></button>
+                </div>
+
+                <!-- Dark pieces row -->
+                <div class="piece-row dark-pieces">
+                    <button class="piece-btn" data-piece="pawn" data-color="black" title="Dark Pawn"><i class="fa-solid fa-chess-pawn chess-piece black" data-icon="pawn"></i></button>
+                    <button class="piece-btn" data-piece="knight" data-color="black" title="Dark Knight"><i class="fa-solid fa-chess-knight chess-piece black" data-icon="knight"></i></button>
+                    <button class="piece-btn" data-piece="bishop" data-color="black" title="Dark Bishop"><i class="fa-solid fa-chess-bishop chess-piece black" data-icon="bishop"></i></button>
+                    <button class="piece-btn" data-piece="rook" data-color="black" title="Dark Rook"><i class="fa-solid fa-chess-rook chess-piece black" data-icon="rook"></i></button>
+                    <button class="piece-btn" data-piece="trebuchet" data-color="black" title="Dark Trebuchet"><i class="fa-solid fa-meteor chess-piece black" data-icon="trebuchet"></i></button>
+                    <button class="piece-btn" data-piece="queen" data-color="black" title="Dark Queen"><i class="fa-solid fa-chess-queen chess-piece black" data-icon="queen"></i></button>
+                    <button class="piece-btn" data-piece="king" data-color="black" title="Dark King"><i class="fa-solid fa-chess-king chess-piece black" data-icon="king"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Fairy-Stockfish (ffish.js) loaded after modules -->
     <script src="js/stockfish/ffish.js"></script>
 </body>

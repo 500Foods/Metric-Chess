@@ -81,8 +81,9 @@
             <button id="redoMove" title="Redo move"><i class="fa-solid fa-redo" data-icon="redoMove"></i></button>
             <div class="game-status" id="gameStatus" title="Current game status">White's turn</div>
             <button id="resignGame" title="Resign the game"><i class="fa-solid fa-flag" data-icon="resignGame"></i></button>
+            <button id="themePalette" title="Change theme"><i class="fa-solid fa-palette" data-icon="themePalette"></i></button>
+            <button id="customBoard" title="Customize board"><i class="fa-solid fa-screwdriver-wrench" data-icon="customBoard"></i></button>
             <button id="rotateLeft" class="orientation-button" title="Rotate board left"><i class="fa-solid fa-arrow-left" data-icon="rotateLeft"></i></button>
-            <button id="rotateRight" class="orientation-button" title="Rotate board right"><i class="fa-solid fa-arrow-right" data-icon="rotateRight"></i></button>
             <button id="toggleAudio" title="Toggle sound effects"><i class="fa-solid fa-volume-up" data-icon="toggleAudio"></i></button>
             <div class="ai-spinner black-thinking" id="blackSpinner" title="Black AI thinking">
                 <i class="fa-solid fa-atom" data-icon="blackSpinner"></i>
@@ -182,6 +183,15 @@
                 </select>
                 <p class="difficulty-hint">Longer thinking for stronger AI</p>
             </div>
+            <div class="setup-option">
+                <label for="themeSelector">Theme</label>
+                <select id="themeSelector">
+                    <option value="default" selected>Default</option>
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                </select>
+                <p class="theme-hint">Visual appearance of the game</p>
+            </div>
             <div class="modal-buttons">
                 <button id="startGame">Start Game</button>
                 <button id="cancelGame">Cancel</button>
@@ -203,6 +213,47 @@
             </div>
         </div>
     </div>
+
+    <!-- Customization Modal -->
+    <div class="modal" id="customizationModal">
+        <div class="modal-content customization-content">
+            <div class="customization-options">
+                <!-- Function buttons row -->
+                <div class="function-buttons">
+                    <button id="undoCustom" class="customization-btn" title="Undo Customization"><i class="fa-solid fa-rotate-left" data-icon="undoCustom"></i></button>
+                    <button id="clearSquare" class="customization-btn" title="Clear Square"><i class="fa-solid fa-trash" data-icon="clearSquare"></i></button>
+                    <button id="clearRank" class="customization-btn" title="Clear Rank"><i class="fa-solid fa-xmarks-lines" data-icon="clearRank"></i></button>
+                    <button id="clearFile" class="customization-btn" title="Clear File"><i class="fa-solid fa-xmarks-lines fa-rotate-90" data-icon="clearFile"></i></button>
+                    <button id="clearBoard" class="customization-btn" title="Clear Board"><i class="fa-solid fa-dumpster" data-icon="clearBoard"></i></button>
+                    <button id="mirrorBoard" class="customization-btn" title="Mirror Board"><i class="fa-solid fa-star-half-stroke" data-icon="mirrorBoard"></i></button>
+                    <button id="resetBoard" class="customization-btn" title="Reset Board"><i class="fa-solid fa-star" data-icon="resetBoard"></i></button>
+                </div>
+
+                <!-- Light pieces row -->
+                <div class="piece-row light-pieces">
+                    <button class="piece-btn" data-piece="pawn" data-color="white" title="Light Pawn"><i class="fa-sharp-duotone fa-solid fa-chess-pawn chess-piece white"></i></button>
+                    <button class="piece-btn" data-piece="knight" data-color="white" title="Light Knight"><i class="fa-sharp-duotone fa-solid fa-chess-knight chess-piece white"></i></button>
+                    <button class="piece-btn" data-piece="bishop" data-color="white" title="Light Bishop"><i class="fa-sharp-duotone fa-solid fa-chess-bishop chess-piece white"></i></button>
+                    <button class="piece-btn" data-piece="rook" data-color="white" title="Light Rook"><i class="fa-sharp-duotone fa-solid fa-chess-rook chess-piece white"></i></button>
+                    <button class="piece-btn" data-piece="trebuchet" data-color="white" title="Light Trebuchet"><i class="fa-sharp-duotone fa-solid fa-meteor chess-piece white"></i></button>
+                    <button class="piece-btn" data-piece="queen" data-color="white" title="Light Queen"><i class="fa-sharp-duotone fa-solid fa-chess-queen chess-piece white"></i></button>
+                    <button class="piece-btn" data-piece="king" data-color="white" title="Light King"><i class="fa-sharp-duotone fa-solid fa-chess-king chess-piece white"></i></button>
+                </div>
+
+                <!-- Dark pieces row -->
+                <div class="piece-row dark-pieces">
+                    <button class="piece-btn" data-piece="pawn" data-color="black" title="Dark Pawn"><i class="fa-sharp-duotone fa-solid fa-chess-pawn chess-piece black"></i></button>
+                    <button class="piece-btn" data-piece="knight" data-color="black" title="Dark Knight"><i class="fa-sharp-duotone fa-solid fa-chess-knight chess-piece black"></i></button>
+                    <button class="piece-btn" data-piece="bishop" data-color="black" title="Dark Bishop"><i class="fa-sharp-duotone fa-solid fa-chess-bishop chess-piece black"></i></button>
+                    <button class="piece-btn" data-piece="rook" data-color="black" title="Dark Rook"><i class="fa-sharp-duotone fa-solid fa-chess-rook chess-piece black"></i></button>
+                    <button class="piece-btn" data-piece="trebuchet" data-color="black" title="Dark Trebuchet"><i class="fa-sharp-duotone fa-solid fa-meteor chess-piece black"></i></button>
+                    <button class="piece-btn" data-piece="queen" data-color="black" title="Dark Queen"><i class="fa-sharp-duotone fa-solid fa-chess-queen chess-piece black"></i></button>
+                    <button class="piece-btn" data-piece="king" data-color="black" title="Dark King"><i class="fa-sharp-duotone fa-solid fa-chess-king chess-piece black"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="js/main.js" type="module"></script>
     <!-- Fairy-Stockfish (ffish.js) loaded after modules -->
     <script src="js/stockfish/ffish.js"></script>

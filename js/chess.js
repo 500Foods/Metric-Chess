@@ -10,7 +10,7 @@ const PIECE_ICONS = {
     'bishop': 'fa-chess-bishop',
     'knight': 'fa-chess-knight',
     'pawn': 'fa-chess-pawn',
-    'trebuchet': 'fa-tower-observation'
+    'trebuchet': 'fa-meteor'
 };
 
 // Movement patterns for each piece type

@@ -111,7 +111,7 @@ export class ChessRenderer {
 
     renderBoard(game) {
         // Clear existing pieces
-        const existingPieces = document.querySelectorAll('.chess-piece');
+        const existingPieces = document.querySelectorAll('.cell .chess-piece');
         existingPieces.forEach(piece => piece.remove());
            
         // Get the white position for rendering orientation
@@ -307,12 +307,20 @@ export class ChessRenderer {
     clearHighlights() {
         this.clearSelectionHighlights();
         this.clearMoveHighlights();
+        this.clearCustomizationHighlights();
     }
 
     clearSelectionHighlights() {
         const selectedCells = document.querySelectorAll('.selected-piece');
         selectedCells.forEach(cell => {
             cell.classList.remove('selected-piece');
+        });
+    }
+
+    clearCustomizationHighlights() {
+        const customizationCells = document.querySelectorAll('.customization-target');
+        customizationCells.forEach(cell => {
+            cell.classList.remove('customization-target');
         });
     }
 

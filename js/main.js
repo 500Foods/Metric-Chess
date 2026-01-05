@@ -23,6 +23,9 @@ class MetricChessApp {
         this.availableMoves = [];
         this.audioEnabled = true;
         this.lastMovedPiece = null;
+        this.customizationMode = false;
+        this.customizationTarget = null;
+        this.customizationHistory = [];
 
         // Set default game mode: human vs AI with white at bottom
         this.game.bottomPlayerType = 'human';
@@ -54,6 +57,9 @@ class MetricChessApp {
 
         // Update button states
         this.updateButtonStates();
+
+        // Initialize customization undo button as disabled (no customizations to undo initially)
+        document.getElementById('undoCustom').disabled = true;
 
         // Check if AI should make the first move (black AI in default setup)
         this.checkForAIMove();
@@ -136,9 +142,6 @@ class MetricChessApp {
             this.rotateOrientation('left');
         });
 
-        document.getElementById('rotateRight').addEventListener('click', () => {
-            this.rotateOrientation('right');
-        });
 
 
         // Resign game button
@@ -146,9 +149,82 @@ class MetricChessApp {
             this.resignGame();
         });
 
+        // Theme palette button
+        document.getElementById('themePalette').addEventListener('click', () => {
+            this.changeTheme();
+        });
+
+        // Custom board button
+        document.getElementById('customBoard').addEventListener('click', () => {
+            this.toggleCustomizationMode();
+        });
+
+        // Customization modal event listeners
+        document.getElementById('undoCustom').addEventListener('click', () => {
+            this.undoCustomization();
+        });
+
+        document.getElementById('clearSquare').addEventListener('click', () => {
+            this.clearSquare();
+        });
+
+        document.getElementById('clearRank').addEventListener('click', () => {
+            if (this.customizationTarget) {
+                this.clearRank(this.customizationTarget.rank);
+            }
+        });
+
+        document.getElementById('clearFile').addEventListener('click', () => {
+            if (this.customizationTarget) {
+                this.clearFile(this.customizationTarget.file);
+            }
+        });
+
+        document.getElementById('clearBoard').addEventListener('click', () => {
+            this.clearAll();
+        });
+
+        document.getElementById('mirrorBoard').addEventListener('click', () => {
+            this.mirrorBoard();
+        });
+
+        document.getElementById('resetBoard').addEventListener('click', () => {
+            this.resetBoard();
+        });
+
+        // Piece selection buttons
+        document.querySelectorAll('.piece-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const pieceType = e.currentTarget.dataset.piece;
+                const color = e.currentTarget.dataset.color;
+                this.placeCustomPiece(this.customizationTarget.file, this.customizationTarget.rank,
+                                     { type: pieceType, color: color });
+            });
+        });
+
         // Toggle audio button
         document.getElementById('toggleAudio').addEventListener('click', () => {
             this.toggleAudio();
+        });
+
+        // Customization modal dismiss
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const customizationModal = document.getElementById('customizationModal');
+                if (customizationModal.style.display === 'flex') {
+                    customizationModal.style.display = 'none';
+                    this.customizationTarget = null;
+                    this.renderer.clearHighlights();
+                }
+            }
+        });
+
+        document.getElementById('customizationModal').addEventListener('click', (e) => {
+            if (e.target.id === 'customizationModal') {
+                document.getElementById('customizationModal').style.display = 'none';
+                this.customizationTarget = null;
+                this.renderer.clearHighlights();
+            }
         });
         
         // Game setup modal buttons
@@ -195,6 +271,12 @@ class MetricChessApp {
     }
 
     async handleCellClick(file, rank) {
+        // Check if we're in customization mode
+        if (this.customizationMode) {
+            this.handleCustomizationClick(file, rank);
+            return;
+        }
+
         // Check if game has ended
         if (this.gameEnded) {
             console.log('Game has ended, ignoring cell click');
@@ -203,16 +285,16 @@ class MetricChessApp {
 
         // Transform the clicked coordinates back to board coordinates based on orientation
         const { boardFile, boardRank } = this.transformScreenToBoardCoords(file, rank);
-         
-        const piece = this.game.board[boardRank][boardFile];
           
+        const piece = this.game.board[boardRank][boardFile];
+           
         // If we have a selected piece and clicked on a different cell
         if (this.selectedPiece && (this.selectedPiece.file !== boardFile || this.selectedPiece.rank !== boardRank)) {
             // Check if the clicked cell is a valid move
             const isValidMove = this.availableMoves.some(move =>
                 move.file === boardFile && move.rank === boardRank
             );
-              
+               
             if (isValidMove) {
                 // Check if this is a pawn promotion move
                 const piece = this.selectedPiece.piece;
@@ -241,7 +323,7 @@ class MetricChessApp {
                 return;
             }
         }
-          
+           
         // If we clicked on a piece of the current player's color
         if (piece && piece.color === this.game.currentPlayer) {
             // Check if it's already selected
@@ -253,7 +335,7 @@ class MetricChessApp {
             } else {
                 // Calculate available moves using board coordinates
                 this.availableMoves = this.game.getAvailableMoves(boardFile, boardRank);
- 
+  
                 // Highlight the selected piece and available moves (using screen coordinates)
                 this.renderer.highlightPiece(file, rank, 'selected-piece');
                 this.renderer.highlightMoves(this.availableMoves, this.game.whitePosition);
@@ -556,6 +638,7 @@ class MetricChessApp {
         const boardOrientation = document.getElementById('boardOrientation').value;
         const gameMode = document.getElementById('gameMode').value;
         const aiTimeLimit = parseInt(document.getElementById('aiDifficulty').value);
+        const theme = document.getElementById('themeSelector').value;
 
         // Reset the game completely
         this.game.reset();
@@ -578,6 +661,9 @@ class MetricChessApp {
         this.lastMovedPiece = null;
         this.renderer.lastMovedPiece = null;
 
+        // Apply theme
+        this.applyTheme(theme);
+
         // Re-render with new orientation
         this.renderer.renderBoard(this.game);
         this.updateGameStatus();
@@ -590,6 +676,7 @@ class MetricChessApp {
         console.log(`Starting new game: ${gameMode} with ${boardOrientation}`);
         console.log(`White position: ${this.game.whitePosition}`);
         console.log(`Bottom: ${bottomPlayer}, Top: ${topPlayer}`);
+        console.log(`Theme: ${theme}`);
 
         // Check if AI needs to make a move
         this.checkForAIMove();
@@ -783,6 +870,262 @@ class MetricChessApp {
         console.log(`Orientation changed to: ${this.game.whitePosition}`);
     }
 
+    // Customization mode methods
+    toggleCustomizationMode() {
+        this.customizationMode = !this.customizationMode;
+        const button = document.getElementById('customBoard');
+        const icon = button.querySelector('i');
+        const prefix = getFAIconPrefix();
+        const customizationModal = document.getElementById('customizationModal');
+         
+        if (this.customizationMode) {
+            // Enter customization mode
+            icon.className = `${prefix} fa-screwdriver-wrench customization-active`;
+            // Update FloatingUI tooltip text
+            const tooltips = document.querySelectorAll('.tooltip');
+            tooltips.forEach(tooltip => {
+                if (tooltip.textContent.includes('Customize board') || tooltip.textContent.includes('Stop customizing board')) {
+                    // Find the text node (first child before the arrow)
+                    const textNode = tooltip.firstChild;
+                    if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+                        textNode.textContent = 'Stop customizing board';
+                    }
+                }
+            });
+            // Reset customization history to current board state
+            this.customizationHistory = [JSON.parse(JSON.stringify(this.game.board))];
+            // Undo button disabled at initial state
+            document.getElementById('undoCustom').disabled = true;
+            this.renderer.clearHighlights();
+            this.selectedPiece = null;
+            this.availableMoves = [];
+            if (this.customizationTarget) {
+                customizationModal.style.display = 'flex';
+            }
+            console.log('Customization mode enabled');
+        } else {
+            // Exit customization mode
+            icon.className = `${prefix} fa-screwdriver-wrench`;
+            // Update FloatingUI tooltip text
+            const tooltips = document.querySelectorAll('.tooltip');
+            tooltips.forEach(tooltip => {
+                if (tooltip.textContent.includes('Customize board') || tooltip.textContent.includes('Stop customizing board')) {
+                    // Find the text node (first child before the arrow)
+                    const textNode = tooltip.firstChild;
+                    if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+                        textNode.textContent = 'Customize board';
+                    }
+                }
+            });
+            // Ensure complete cleanup of customization state
+            this.customizationTarget = null;
+            this.renderer.clearHighlights();
+            customizationModal.style.display = 'none';
+            this.customizationHistory = [];
+            console.log('Customization mode disabled');
+        }
+    }
+
+    handleCustomizationClick(file, rank) {
+        // Transform the clicked coordinates back to board coordinates based on orientation
+        const { boardFile, boardRank } = this.transformScreenToBoardCoords(file, rank);
+
+        if (!this.customizationTarget) {
+            // No target set: select target square for customization
+            // Clear any existing highlights first
+            this.renderer.clearHighlights();
+
+            this.customizationTarget = { file: boardFile, rank: boardRank };
+            this.renderer.highlightPiece(file, rank, 'customization-target');
+
+            // Show the customization modal
+            document.getElementById('customizationModal').style.display = 'flex';
+        } else if (this.customizationTarget.file === boardFile && this.customizationTarget.rank === boardRank) {
+            // Clicked on the target square: clear the target
+            this.customizationTarget = null;
+            this.renderer.clearHighlights();
+            document.getElementById('customizationModal').style.display = 'none';
+        } else {
+            // Clicked on a different square: change the target
+            // Clear the old highlight
+            this.renderer.clearHighlights();
+
+            this.customizationTarget = { file: boardFile, rank: boardRank };
+            this.renderer.highlightPiece(file, rank, 'customization-target');
+
+            // Modal stays open
+        }
+    }
+
+
+    placeCustomPiece(boardFile, boardRank, piece) {
+        if (!this.customizationTarget) return;
+
+        this.game.board[boardRank][boardFile] = piece;
+        // Save current state to history after making changes
+        this.customizationHistory.push(JSON.parse(JSON.stringify(this.game.board)));
+        document.getElementById('undoCustom').disabled = this.customizationHistory.length <= 1;
+        this.customizationTarget = null;
+        this.renderer.clearHighlights();
+        this.renderer.renderBoard(this.game);
+        document.getElementById('customizationModal').style.display = 'none';
+    }
+
+    // Clear methods for customization
+    clearRank(rank) {
+        for (let file = 0; file < 10; file++) {
+            this.game.board[rank][file] = null;
+        }
+        // Save current state to history after making changes
+        this.customizationHistory.push(JSON.parse(JSON.stringify(this.game.board)));
+        document.getElementById('undoCustom').disabled = this.customizationHistory.length <= 1;
+        this.customizationTarget = null;
+        this.renderer.clearHighlights();
+        this.renderer.renderBoard(this.game);
+        document.getElementById('customizationModal').style.display = 'none';
+    }
+
+    clearFile(file) {
+        for (let rank = 0; rank < 10; rank++) {
+            this.game.board[rank][file] = null;
+        }
+        // Save current state to history after making changes
+        this.customizationHistory.push(JSON.parse(JSON.stringify(this.game.board)));
+        document.getElementById('undoCustom').disabled = this.customizationHistory.length <= 1;
+        this.customizationTarget = null;
+        this.renderer.clearHighlights();
+        this.renderer.renderBoard(this.game);
+        document.getElementById('customizationModal').style.display = 'none';
+    }
+
+    clearAll() {
+        for (let rank = 0; rank < 10; rank++) {
+            for (let file = 0; file < 10; file++) {
+                this.game.board[rank][file] = null;
+            }
+        }
+        // Save current state to history after making changes
+        this.customizationHistory.push(JSON.parse(JSON.stringify(this.game.board)));
+        document.getElementById('undoCustom').disabled = this.customizationHistory.length <= 1;
+        this.customizationTarget = null;
+        this.renderer.clearHighlights();
+        this.renderer.renderBoard(this.game);
+        document.getElementById('customizationModal').style.display = 'none';
+    }
+
+    // Additional customization methods
+    undoCustomization() {
+        if (this.customizationHistory.length > 1) {
+            this.customizationHistory.pop();
+            this.game.board = JSON.parse(JSON.stringify(this.customizationHistory[this.customizationHistory.length - 1]));
+            this.renderer.renderBoard(this.game);
+            document.getElementById('undoCustom').disabled = this.customizationHistory.length <= 1;
+            this.customizationTarget = null;
+            this.renderer.clearHighlights();
+        }
+    }
+
+    clearSquare() {
+        if (this.customizationTarget) {
+            this.placeCustomPiece(this.customizationTarget.file, this.customizationTarget.rank, null);
+        }
+    }
+
+    mirrorBoard() {
+        // Copy light half to dark half, changing piece colors
+        for (let rank = 0; rank < 5; rank++) {
+            for (let file = 0; file < 10; file++) {
+                const sourcePiece = this.game.board[rank][file];
+                if (sourcePiece) {
+                    // Mirror to the opposite side
+                    const mirroredRank = 9 - rank;
+                    this.game.board[mirroredRank][file] = {
+                        type: sourcePiece.type,
+                        color: sourcePiece.color === 'white' ? 'black' : 'white'
+                    };
+                }
+            }
+        }
+        // Save current state to history after making changes
+        this.customizationHistory.push(JSON.parse(JSON.stringify(this.game.board)));
+        document.getElementById('undoCustom').disabled = this.customizationHistory.length <= 1;
+        this.renderer.renderBoard(this.game);
+        this.customizationTarget = null;
+        this.renderer.clearHighlights();
+        document.getElementById('customizationModal').style.display = 'none';
+    }
+
+    resetBoard() {
+        // Reset to standard opening positions
+        this.game.reset();
+        // Save current state to history after making changes
+        this.customizationHistory.push(JSON.parse(JSON.stringify(this.game.board)));
+        document.getElementById('undoCustom').disabled = this.customizationHistory.length <= 1;
+        this.renderer.renderBoard(this.game);
+        this.customizationTarget = null;
+        this.renderer.clearHighlights();
+        document.getElementById('customizationModal').style.display = 'none';
+    }
+
+    // Theme methods
+    changeTheme() {
+        const currentTheme = document.getElementById('themeSelector').value;
+        const themes = ['default', 'light', 'dark'];
+        const currentIndex = themes.indexOf(currentTheme);
+        const nextIndex = (currentIndex + 1) % themes.length;
+        const nextTheme = themes[nextIndex];
+        
+        this.applyTheme(nextTheme);
+        document.getElementById('themeSelector').value = nextTheme;
+    }
+
+    applyTheme(theme) {
+        // Store the current theme
+        this.currentTheme = theme;
+        
+        // Apply theme to elements
+        const themeConfig = this.getThemeConfig(theme);
+        if (themeConfig) {
+            // Apply button bar background
+            const buttonBar = document.querySelector('.game-controls');
+            if (buttonBar && themeConfig.elements.buttonBar) {
+                buttonBar.style.backgroundColor = themeConfig.elements.buttonBar.background;
+            }
+            
+            // Apply promotion modal background
+            const promotionModal = document.querySelector('.promotion-content');
+            if (promotionModal && themeConfig.elements.promotionModal) {
+                promotionModal.style.backgroundColor = themeConfig.elements.promotionModal.background;
+            }
+        }
+    }
+
+    getThemeConfig(theme) {
+        // This would be loaded from the config file in a real implementation
+        const themes = {
+            'default': {
+                elements: {
+                    buttonBar: { background: '#34495e' },
+                    promotionModal: { background: '#34495e' }
+                }
+            },
+            'light': {
+                elements: {
+                    buttonBar: { background: '#f0d9b5' },
+                    promotionModal: { background: '#f0d9b5' }
+                }
+            },
+            'dark': {
+                elements: {
+                    buttonBar: { background: '#1a1a1a' },
+                    promotionModal: { background: '#1a1a1a' }
+                }
+            }
+        };
+        
+        return themes[theme] || themes.default;
+    }
+
     updateStaticIcons() {
         // Update all static HTML icons to use the configured Font Awesome style
         const prefixClasses = getFAIconPrefix().split(' ').filter(cls => cls);
@@ -855,7 +1198,7 @@ class MetricChessApp {
             function show() {
                 // Clear any existing timeout
                 clearTimeout(showTimeout);
-                
+
                 // Set timeout for 1500ms delay before showing tooltip
                 showTimeout = setTimeout(() => {
                     tooltip.classList.add('show');
@@ -867,7 +1210,7 @@ class MetricChessApp {
             function hide() {
                 // Clear the show timeout to prevent showing if mouse leaves before delay
                 clearTimeout(showTimeout);
-                
+
                 tooltip.classList.remove('show');
                 cleanup?.();
             }

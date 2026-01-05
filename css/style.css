@@ -22,6 +22,8 @@
     --highlight-square: rgba(255, 255, 0, 0.5);
     --available-move: rgba(0, 255, 0, 0.3);
     --capture-move: rgba(255, 0, 0, 0.4);
+    --customization-target: rgba(243, 156, 18, 0.5);
+    --customization-active: #f39c12;
 }
 
 * {
@@ -130,7 +132,7 @@ body {
     background: #555;
     color: white;
     padding: 8px 12px;
-    border-radius: 6px;
+    border-radius: 20px;
     border: 3px solid #333;
     pointer-events: none;
     font-size: 14px;
@@ -214,13 +216,75 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 10px;
-    padding: 10px;
+    gap: 8px;
+    padding: 8px;
     background-color: #34495e;
     flex-wrap: wrap;
     width: min(90vh, 90vw);
     margin: 20px;
     border-radius: 10px;
+}
+
+
+/* Customization mode styles */
+.customization-active {
+    color: var(--customization-active) !important;
+}
+
+.customization-target {
+    background-color: var(--customization-target) !important;
+}
+
+/* Piece selection modal */
+.piece-selection-modal {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 2px solid #34495e;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+    max-width: 400px;
+    color: #333;
+}
+
+.piece-selection-modal h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #34495e;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.piece-options {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.piece-option {
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: 2px solid #34495e;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    transition: all 0.2s;
+    padding: 0;
+}
+
+.piece-option:hover {
+    background-color: #34495e;
+    transform: scale(1.1);
+}
+
+.piece-option i {
+    font-size: 1.5rem;
 }
 
 /* AI Thinking Spinners */
@@ -234,14 +298,13 @@ body {
     transition: opacity 0.3s;
 }
 #whiteSpinner {
-    justify-content: start;
     width: 80px;
-    margin-left: -7px;
+    margin-left: -20px;
 }
 #blackSpinner {
-    justify-content: end;
+
     width: 80px;      
-    margin-right: -7px;
+    margin-right: -20px;
 }
 
 .ai-spinner.active {
@@ -565,12 +628,14 @@ button:disabled {
 /* Promotion Modal */
 .promotion-content {
     text-align: center;
-    max-width: 400px;
+    max-width: 800px;
+    background-color: #34495e;
+    color: white;
 }
 
 .promotion-content h2 {
     margin-bottom: 20px;
-    color: #34495e;
+    color: white;
 }
 
 .promotion-options {
@@ -580,7 +645,56 @@ button:disabled {
     flex-wrap: wrap;
 }
 
-.promotion-piece {
+/* No border class for pieces */
+.promotion-piece.no-border {
+    border: none;
+    background: none;
+}
+
+/* Function buttons styling */
+.promotion-piece.function-btn {
+    border: 2px solid #34495e;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 0;
+    font-size: 1rem;
+    min-width: 60px;
+    height: 60px;
+}
+
+.promotion-piece.function-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.promotion-piece.function-btn i {
+    font-size: 2rem;
+}
+
+/* Customization Modal */
+.customization-content {
+    text-align: center;
+    width: 100%;
+    max-width: 525px;
+    max-height: 250px;
+    background-color: #34495e;
+    color: white;
+    padding: 20px;
+}
+
+.customization-options {
+    display: flex;
+    flex-direction: column;
+    gap: 00px;
+}
+
+.function-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.customization-btn {
     width: 60px;
     height: 60px;
     background: none;
@@ -590,9 +704,72 @@ button:disabled {
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 1rem;
+    transition: all 0.3s;
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.customization-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.customization-btn i {
     font-size: 2rem;
+}
+
+
+
+.piece-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.piece-btn {
+    width: 60px;
+    height: 60px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.piece-btn:hover {
+    transform: scale(1.1);
+}
+
+/* Fix for rotated icons */
+.fa-rotate-90 {
+    transform: rotate(90deg);
+}
+
+
+/* Fix for rotated icons */
+.fa-rotate-90 {
+    transform: rotate(90deg);
+}
+
+.promotion-piece {
+    min-width: 60px;
+    height: 60px;
+    background: none;
+    border: 2px solid #34495e;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
     transition: all 0.3s;
     color: #34495e;
+    padding: 0 8px;
 }
 
 .promotion-piece:hover {
