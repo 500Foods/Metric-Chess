@@ -1,0 +1,107 @@
+{
+  "_comment": "Supply a Font Awesome Kit here to enable both new styles and icon overrides. No kit = no new styles and no icon changes.",
+    "fontAwesomeKit": "<Font Awesome Kit Key>",
+    "fontAwesomeStyle": "fa-sharp-duotone fa-solid",
+  "icons": {
+    "pieces": {
+      "king": "fa-chess-king",
+      "heir": "fa-chess-king",
+      "queen": "fa-chess-queen",
+      "rook": "fa-chess-rook",
+      "bishop": "fa-chess-bishop",
+      "knight": "fa-chess-knight",
+      "pawn": "fa-chess-pawn",
+      "trebuchet": "fa-meteor"
+    },
+    "ui": {
+      "whiteSpinner": ["fa-atom-simple", "fa-swap-opacity"],
+      "blackSpinner": ["fa-atom-simple", "fa-swap-opacity"],
+      "newGame": "fa-shield-plus",
+      "resetGame": "fa-bolt",
+      "undoMove": "fa-rotate-left",
+      "redoMove": "fa-rotate-right",
+      "resignGame": ["fa-flag","fa-swap-opacity"],
+      "rotateLeft": "fa-rotate",
+      "rotateRight": ["fa-rotate-reverse", "fa-swap-opacity"],
+      "toggleAudio": "fa-volume-up",
+      "chessBoard": "fa-chess-board",
+      "trebuchetFeature": "fa-meteor",
+      "heirFeature": "fa-chess-king",
+      "aiFeature": "fa-atom-simple",
+      "undoFeature": "fa-undo",
+      "responsiveFeature": "fa-mobile-alt",
+      "customBoard": "fa-screwdriver-wrench",
+      "themePalette": "fa-palette",
+      "undoCustom": "fa-rotate-left",
+      "clearSquare": "fa-trash",
+      "clearRank": "fa-xmarks-lines",
+      "clearFile": ["fa-xmarks-lines", "fa-rotate-90"],
+      "clearBoard": "fa-dumpster",
+      "mirrorBoard": "fa-star-half-stroke",
+      "resetBoard": "fa-star"
+    }
+  },
+  "themes": {
+    "default": {
+      "name": "Default",
+      "elements": {
+        "buttonBar": {
+          "background": "#34495e"
+        },
+        "promotionModal": {
+          "background": "#34495e"
+        },
+        "customizationModal": {
+          "background": "#34495e"
+        },
+        "customizationTarget": {
+          "background": "rgba(243, 156, 18, 0.5)"
+        },
+        "customizationActive": {
+          "color": "#f39c12"
+        }
+      }
+    },
+    "light": {
+      "name": "Light",
+      "elements": {
+        "buttonBar": {
+          "background": "#f0d9b5"
+        },
+        "promotionModal": {
+          "background": "#f0d9b5"
+        },
+        "customizationModal": {
+          "background": "#f0d9b5"
+        },
+        "customizationTarget": {
+          "background": "rgba(243, 156, 18, 0.5)"
+        },
+        "customizationActive": {
+          "color": "#f39c12"
+        }
+      }
+    },
+    "dark": {
+      "name": "Dark",
+      "elements": {
+        "buttonBar": {
+          "background": "#1a1a1a"
+        },
+        "promotionModal": {
+          "background": "#1a1a1a"
+        },
+        "customizationModal": {
+          "background": "#1a1a1a"
+        },
+        "customizationTarget": {
+          "background": "rgba(243, 156, 18, 0.5)"
+        },
+        "customizationActive": {
+          "color": "#f39c12"
+        }
+      }
+    }
+  },
+  "currentTheme": "default"
+}
