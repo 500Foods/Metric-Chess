@@ -85,9 +85,9 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-    rollupOptions: {
+    rolldownOptions: {
       input: {
-        main: resolve(__dirname, 'index.html')
+        main: resolve(import.meta.dirname, 'index.html')
       },
       output: {
         entryFileNames: 'assets/js/[name]-[hash].js',
@@ -98,8 +98,8 @@ export default defineConfig({
         {
           name: 'copy-metric-chess-json',
           writeBundle() {
-            const sourcePath = resolve(__dirname, 'metric-chess.json');
-            const destPath = resolve(__dirname, 'dist', 'metric-chess.json');
+            const sourcePath = resolve(import.meta.dirname, 'metric-chess.json');
+            const destPath = resolve(import.meta.dirname, 'dist', 'metric-chess.json');
             copyFileSync(sourcePath, destPath);
             console.log('Copied metric-chess.json to dist directory');
           }
@@ -108,7 +108,7 @@ export default defineConfig({
           name: 'copy-stockfish-files',
           writeBundle() {
             // Create stockfish directory in dist
-            const stockfishDir = resolve(__dirname, 'dist', 'js', 'stockfish');
+            const stockfishDir = resolve(import.meta.dirname, 'dist', 'js', 'stockfish');
             if (!fs.existsSync(stockfishDir)) {
               fs.mkdirSync(stockfishDir, { recursive: true });
             }
@@ -116,8 +116,8 @@ export default defineConfig({
             // Copy all stockfish files including the custom worker
             const files = ['ffish.js', 'ffish.wasm', 'stockfish.js', 'stockfish.wasm', 'stockfish.worker.js', 'metric-stockfish-worker.js'];
             files.forEach(file => {
-              const sourcePath = resolve(__dirname, 'js', 'stockfish', file);
-              const destPath = resolve(__dirname, 'dist', 'js', 'stockfish', file);
+              const sourcePath = resolve(import.meta.dirname, 'js', 'stockfish', file);
+              const destPath = resolve(import.meta.dirname, 'dist', 'js', 'stockfish', file);
               if (fs.existsSync(sourcePath)) {
                 copyFileSync(sourcePath, destPath);
                 console.log(`Copied ${file} to dist directory`);
@@ -127,8 +127,8 @@ export default defineConfig({
             // Copy fairy-stockfish files from public directory
             const fairyFiles = ['stockfish.js', 'stockfish.wasm', 'stockfish.worker.js', 'uci.js'];
             fairyFiles.forEach(file => {
-              const sourcePath = resolve(__dirname, 'public', 'stockfish', file);
-              const destPath = resolve(__dirname, 'dist', 'stockfish', file);
+              const sourcePath = resolve(import.meta.dirname, 'public', 'stockfish', file);
+              const destPath = resolve(import.meta.dirname, 'dist', 'stockfish', file);
               const destDir = path.dirname(destPath);
               if (!fs.existsSync(destDir)) {
                 fs.mkdirSync(destDir, { recursive: true });
