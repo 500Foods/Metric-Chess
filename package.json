@@ -25,5 +25,8 @@
     "web"
   ],
   "author": "Metric Chess Team",
-  "license": "MIT"
+  "license": "MIT",
+  "overrides": {
+    "compression": "^1.8.2"
+  }
 }
