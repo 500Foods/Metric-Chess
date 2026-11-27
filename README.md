@@ -171,11 +171,11 @@ While this project is currently under active development, feel free to give it a
 
 <!--CLOC-START -->
 ```cloc
-Last updated at 2026-11-27 00:46:13 UTC
+Last updated at 2026-11-27 17:31:29 UTC
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-JSON                             7              0              0           7058
+JSON                             7              0              0           7000
 JavaScript                      19            657            530           3448
 Markdown                        13           1111             17           3377
 CSS                              2            126             23            754
@@ -184,7 +184,7 @@ YAML                             2              8             13             37
 SVG                              1              0              0             31
 Bourne Shell                     1              8              4             25
 -------------------------------------------------------------------------------
-SUM:                            47           1926            609          15214
+SUM:                            47           1926            609          15156
 -------------------------------------------------------------------------------
 22 Files were skipped (duplicate, binary, or without source code):
   js: 8
